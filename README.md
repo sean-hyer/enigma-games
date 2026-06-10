@@ -11,3 +11,7 @@ Center the game
 Work out what's up with twinklers
 
 Work out what's up with color shading
+
+Bootstrap for CSS
+
+Django?? Useful if we want to make an account to track statistics.
