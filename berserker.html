@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Berserker Sudoku</title>
+  <style>
+    :root {
+      --bg: #0e0e10;
+      --panel: #18181c;
+      --ink: #efe7d6;
+      --muted: #9a8f7a;
+      --gold: #c9a44a;
+      --crimson: #8b1e1e;
+      --grid: #2a2a30;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+    }
+    header {
+      position: relative;
+      padding: 1.4rem 1rem 0.6rem;
+      text-align: center;
+    }
+    h1 {
+      margin: 0.3rem 0 0.2rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+    }
+    .sub {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin: 0 0 0.8rem;
+    }
+    .original {
+      display: inline-block;
+      padding: 0.55rem 1.15rem;
+      background: var(--crimson);
+      color: #fff8ee;
+      text-decoration: none;
+      border-radius: 4px;
+      font-family: system-ui, sans-serif;
+      font-size: 0.95rem;
+      letter-spacing: 0.02em;
+    }
+    .original:hover { filter: brightness(1.12); }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1rem 1.2rem 2.5rem;
+    }
+    .chart-frame {
+      background: var(--panel);
+      border: 1px solid #2e2e34;
+      border-radius: 10px;
+      padding: 0.75rem 0.75rem 0.4rem 0.4rem;
+    }
+    .chart {
+      position: relative;
+      width: 100%;
+      height: min(72vh, 640px);
+    }
+    .axis-label {
+      position: absolute;
+      color: var(--muted);
+      font-family: system-ui, sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .axis-label.y {
+      left: 0;
+      top: 50%;
+      transform: rotate(-90deg) translateX(-50%);
+      transform-origin: left center;
+    }
+    .axis-label.x {
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+    }
+    .plot {
+      position: absolute;
+      left: 72px;
+      right: 18px;
+      top: 12px;
+      bottom: 36px;
+      background:
+        linear-gradient(to right, var(--grid) 1px, transparent 1px) 0 0 / 10% 100%,
+        linear-gradient(to top, var(--grid) 1px, transparent 1px) 0 0 / 100% 10%;
+      border-left: 1px solid var(--gold);
+      border-bottom: 1px solid var(--gold);
+    }
+    .tick {
+      position: absolute;
+      font-family: system-ui, sans-serif;
+      font-size: 0.72rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .tick.y { right: 100%; padding-right: 8px; transform: translateY(50%); }
+    .tick.x { top: 100%; padding-top: 6px; transform: translateX(-50%); }
+    .dot {
+      position: absolute;
+      width: 42px;
+      height: 42px;
+      transform: translate(-50%, 50%);
+      border: none;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+    .dot img {
+      width: 42px;
+      height: 42px;
+      object-fit: cover;
+      border-radius: 6px;
+      box-shadow: 0 0 0 1px #c9a44a55;
+    }
+    .dot:hover img { transform: scale(1.12); }
+    .dot:focus { outline: 2px solid var(--gold); }
+    .status {
+      margin-top: 0.75rem;
+      color: var(--muted);
+      font-family: system-ui, sans-serif;
+      font-size: 0.85rem;
+    }
+    .hint { color: #6e6658; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+    <a id="homeBtn" href="index.php"
+       style="position:fixed; left:10px; top:10px; z-index:5000;
+          height:36px; padding:0 12px; border-radius:6px;
+          border:1px solid #ccc; background:#fff; color:#222;
+          font-family:system-ui,sans-serif; font-size:15px; font-weight:600;
+          display:flex; align-items:center; justify-content:center;
+          box-shadow:0 2px 6px rgba(0,0,0,0.15); text-decoration:none;">
+        ← Home
+    </a>
+  <header>
+    <a class="original" href="http://killersudokuonline.com" target="_blank" rel="noopener" style="background-color: gray;">I have no printer</a>
+    <h1>Berserker Sudoku</h1>
+  </header>
+  <div class="wrap">
+    <div class="chart-frame">
+      <div class="chart" id="chart">
+        <div class="axis-label y">Difficulty</div>
+        <div class="axis-label x">Age</div>
+        <div class="plot" id="plot"></div>
+      </div>
+    </div>
+    <p class="status" id="status">Loading puzzle catalog…</p>
+  </div>
+  <script>
+    const ICON = "img/berserker-icon.jpg";
+    const PDF_DIR = "sudokus/";
+
+    function parseTagNumber(tag) {
+      const m = String(tag || "").match(/^(\d+)/);
+      return m ? Number(m[1]) : null;
+    }
+
+    function daysAgo(iso) {
+      const t = Date.parse(iso);
+      if (Number.isNaN(t)) return 0;
+      return Math.max(0, (Date.now() - t) / 86400000);
+    }
+
+    function place(plot, x01, y01) {
+      return {
+        left: (x01 * 100).toFixed(2) + "%",
+        bottom: (y01 * 100).toFixed(2) + "%"
+      };
+    }
+
+    async function main() {
+      const status = document.getElementById("status");
+      const plot = document.getElementById("plot");
+      let data;
+      try {
+        const res = await fetch("sudoku_list.json", { cache: "no-store" });
+        if (!res.ok) throw new Error(res.status + " " + res.statusText);
+        data = await res.json();
+      } catch (err) {
+        status.textContent = "Could not load sudoku_list.json (" + err.message + "). Upload the catalog next to this page.";
+        return;
+      }
+
+      const puzzles = Array.isArray(data.puzzles) ? data.puzzles : [];
+      const yMin = (data.yAxis && data.yAxis.min != null) ? data.yAxis.min : 110;
+      const yMax = (data.yAxis && data.yAxis.max != null) ? data.yAxis.max : 150;
+      const labels = (data.yAxis && data.yAxis.labels) || [
+        { value: yMax, text: String(yMax) },
+        { value: yMin, text: String(yMin) }
+      ];
+
+    const ages = puzzles.map(p => daysAgo(p.created));
+    const minAge = Math.min(1, ...ages);
+    const maxAge = Math.max(7, ...ages);
+    const minAgeRoot = Math.cbrt(minAge);
+    const maxAgeRoot = Math.cbrt(maxAge);
+
+      labels.forEach(lab => {
+        const y01 = (lab.value - yMin) / (yMax - yMin);
+        const el = document.createElement("div");
+        el.className = "tick y";
+        el.style.bottom = (y01 * 100).toFixed(2) + "%";
+        el.textContent = lab.text;
+        plot.appendChild(el);
+      });
+
+      [0].forEach(age => {
+        const el = document.createElement("div");
+        el.className = "tick x";
+        el.style.left = (((Math.cbrt(age) - minAgeRoot) / (maxAgeRoot - minAgeRoot)) * 100).toFixed(2) + "%";
+        plot.appendChild(el);
+      });
+
+      const jitter = new Map();
+      puzzles.forEach((p, i) => {
+        const realized = (p.realized != null) ? Number(p.realized) : parseTagNumber(p.tag);
+        if (realized == null || Number.isNaN(realized)) return;
+        const age = daysAgo(p.created);
+        let x01 = (Math.cbrt(age) - minAgeRoot) / (maxAgeRoot - minAgeRoot);
+        let y01 = (realized - yMin) / (yMax - yMin);
+        y01 = Math.min(1, Math.max(0, y01));
+        x01 = Math.min(1, Math.max(0, x01));
+        const key = x01.toFixed(2) + ":" + y01.toFixed(2);
+        const n = jitter.get(key) || 0;
+        jitter.set(key, n + 1);
+        x01 += (n % 3 - 1) * 0.012;
+        y01 += Math.floor(n / 3) * 0.018;
+
+        const a = document.createElement("a");
+        a.className = "dot";
+        a.href = PDF_DIR + encodeURIComponent(p.file);
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.title = (p.tag || p.file) + (p.created ? "  " + p.created : "");
+        const pos = place(plot, x01, y01);
+        a.style.left = pos.left;
+        a.style.bottom = pos.bottom;
+        const img = document.createElement("img");
+        img.src = ICON;
+        img.alt = p.tag || "Berserker puzzle";
+        a.appendChild(img);
+        plot.appendChild(a);
+      });
+
+      status.textContent = puzzles.length
+        ? puzzles.length + " puzzle" + (puzzles.length === 1 ? "" : "s") + " on the board."
+        : "Catalog loaded, but puzzles[] is empty. Add rows to sudoku_list.json.";
+    }
+
+    main();
+  </script>
+</body>
+</html>

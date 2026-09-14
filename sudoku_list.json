@@ -1,0 +1,1017 @@
+{
+    "yAxis":  {
+                  "min":  110,
+                  "max":  150,
+                  "labels":  [
+                                 {
+                                     "text":  "onerous",
+                                     "value":  145
+                                 },
+                                 {
+                                     "text":  "challenging",
+                                     "value":  135
+                                 },
+                                 {
+                                     "text":  "moderate",
+                                     "value":  125
+                                 },
+                                 {
+                                     "text":  "easy",
+                                     "value":  115
+                                 }
+                             ]
+              },
+    "puzzles":  [
+                    {
+                        "file":  "KS_112LAK.pdf",
+                        "realized":  112.423646,
+                        "tag":  "112LAK",
+                        "created":  "2026-08-25"
+                    },
+                    {
+                        "file":  "KS_124XXA.pdf",
+                        "realized":  124.918639,
+                        "tag":  "124XXA",
+                        "created":  "2026-08-04"
+                    },
+                    {
+                        "file":  "KS_112UZW.pdf",
+                        "realized":  112.807465,
+                        "tag":  "112UZW",
+                        "created":  "2026-08-13"
+                    },
+                    {
+                        "file":  "KS_113MWK.pdf",
+                        "realized":  113.494652,
+                        "tag":  "113MWK",
+                        "created":  "2026-08-22"
+                    },
+                    {
+                        "file":  "KS_115PTH.pdf",
+                        "realized":  115.605428,
+                        "tag":  "115PTH",
+                        "created":  "2026-08-01"
+                    },
+                    {
+                        "file":  "KS_116GNA.pdf",
+                        "realized":  116.25,
+                        "tag":  "116GNA",
+                        "created":  "2026-08-10"
+                    },
+                    {
+                        "file":  "KS_117CHZ.pdf",
+                        "realized":  117.088701,
+                        "tag":  "117CHZ",
+                        "created":  "2026-08-19"
+                    },
+                    {
+                        "file":  "KS_117YOA.pdf",
+                        "realized":  117.943787,
+                        "tag":  "117YOA",
+                        "created":  "2026-08-26"
+                    },
+                    {
+                        "file":  "KS_118CVO.pdf",
+                        "realized":  118.108785,
+                        "tag":  "118CVO",
+                        "created":  "2026-08-04"
+                    },
+                    {
+                        "file":  "KS_118FAN.pdf",
+                        "realized":  118.193047,
+                        "tag":  "118FAN",
+                        "created":  "2026-08-13"
+                    },
+                    {
+                        "file":  "KS_118JPD.pdf",
+                        "realized":  118.368514,
+                        "tag":  "118JPD",
+                        "created":  "2026-08-22"
+                    },
+                    {
+                        "file":  "KS_119FTQ.pdf",
+                        "realized":  119.221325,
+                        "tag":  "119FTQ",
+                        "created":  "2026-08-02"
+                    },
+                    {
+                        "file":  "KS_119TUJ.pdf",
+                        "realized":  119.760867,
+                        "tag":  "119TUJ",
+                        "created":  "2026-08-11"
+                    },
+                    {
+                        "file":  "KS_120GAF.pdf",
+                        "realized":  120.231054,
+                        "tag":  "120GAF",
+                        "created":  "2026-08-20"
+                    },
+                    {
+                        "file":  "KS_121QDE.pdf",
+                        "realized":  121.62005,
+                        "tag":  "121QDE",
+                        "created":  "2026-08-03"
+                    },
+                    {
+                        "file":  "KS_122KVJ.pdf",
+                        "realized":  122.416193,
+                        "tag":  "122KVJ",
+                        "created":  "2026-08-12"
+                    },
+                    {
+                        "file":  "KS_122VIE.pdf",
+                        "realized":  122.819754,
+                        "tag":  "122VIE",
+                        "created":  "2026-08-21"
+                    },
+                    {
+                        "file":  "KS_123RYU.pdf",
+                        "realized":  123.690487,
+                        "tag":  "123RYU",
+                        "created":  "2026-08-04"
+                    },
+                    {
+                        "file":  "KS_124CVD.pdf",
+                        "realized":  124.108159,
+                        "tag":  "124CVD",
+                        "created":  "2026-08-13"
+                    },
+                    {
+                        "file":  "KS_124DJS.pdf",
+                        "realized":  124.129722,
+                        "tag":  "124DJS",
+                        "created":  "2026-08-22"
+                    },
+                    {
+                        "file":  "KS_125FKV.pdf",
+                        "realized":  125.208295,
+                        "tag":  "125FKV",
+                        "created":  "2026-08-05"
+                    },
+                    {
+                        "file":  "KS_125JYY.pdf",
+                        "realized":  125.383022,
+                        "tag":  "125JYY",
+                        "created":  "2026-08-14"
+                    },
+                    {
+                        "file":  "KS_126CMB.pdf",
+                        "realized":  126.094731,
+                        "tag":  "126CMB",
+                        "created":  "2026-08-23"
+                    },
+                    {
+                        "file":  "KS_128ISL.pdf",
+                        "realized":  128.334945,
+                        "tag":  "128ISL",
+                        "created":  "2026-08-06"
+                    },
+                    {
+                        "file":  "KS_128TLO.pdf",
+                        "realized":  128.747838,
+                        "tag":  "128TLO",
+                        "created":  "2026-08-15"
+                    },
+                    {
+                        "file":  "KS_129AUA.pdf",
+                        "realized":  129.029586,
+                        "tag":  "129AUA",
+                        "created":  "2026-08-24"
+                    },
+                    {
+                        "file":  "KS_129GHG.pdf",
+                        "realized":  129.241466,
+                        "tag":  "129GHG",
+                        "created":  "2026-08-07"
+                    },
+                    {
+                        "file":  "KS_129SNK.pdf",
+                        "realized":  129.712107,
+                        "tag":  "129SNK",
+                        "created":  "2026-08-16"
+                    },
+                    {
+                        "file":  "KS_129ZTA.pdf",
+                        "realized":  129.989645,
+                        "tag":  "129ZTA",
+                        "created":  "2026-08-25"
+                    },
+                    {
+                        "file":  "KS_131GWY.pdf",
+                        "realized":  131.264679,
+                        "tag":  "131GWY",
+                        "created":  "2026-08-08"
+                    },
+                    {
+                        "file":  "KS_131KXP.pdf",
+                        "realized":  131.419492,
+                        "tag":  "131KXP",
+                        "created":  "2026-08-17"
+                    },
+                    {
+                        "file":  "KS_131VRT.pdf",
+                        "realized":  131.833921,
+                        "tag":  "131VRT",
+                        "created":  "2026-08-26"
+                    },
+                    {
+                        "file":  "KS_131WGH.pdf",
+                        "realized":  131.855428,
+                        "tag":  "131WGH",
+                        "created":  "2026-08-09"
+                    },
+                    {
+                        "file":  "KS_133AJS.pdf",
+                        "realized":  133.014338,
+                        "tag":  "133AJS",
+                        "created":  "2026-08-18"
+                    },
+                    {
+                        "file":  "KS_134CUL.pdf",
+                        "realized":  134.107135,
+                        "tag":  "134CUL",
+                        "created":  "2026-08-01"
+                    },
+                    {
+                        "file":  "KS_135IUI.pdf",
+                        "realized":  135.337733,
+                        "tag":  "135IUI",
+                        "created":  "2026-08-10"
+                    },
+                    {
+                        "file":  "KS_135VFY.pdf",
+                        "realized":  135.816454,
+                        "tag":  "135VFY",
+                        "created":  "2026-08-19"
+                    },
+                    {
+                        "file":  "KS_135YMC.pdf",
+                        "realized":  135.940942,
+                        "tag":  "135YMC",
+                        "created":  "2026-08-02"
+                    },
+                    {
+                        "file":  "KS_138DJU.pdf",
+                        "realized":  138.129836,
+                        "tag":  "138DJU",
+                        "created":  "2026-08-11"
+                    },
+                    {
+                        "file":  "KS_138DVI.pdf",
+                        "realized":  138.146905,
+                        "tag":  "138DVI",
+                        "created":  "2026-08-20"
+                    },
+                    {
+                        "file":  "KS_139NFN.pdf",
+                        "realized":  139.508136,
+                        "tag":  "139NFN",
+                        "created":  "2026-08-03"
+                    },
+                    {
+                        "file":  "KS_139PVD.pdf",
+                        "realized":  139.608159,
+                        "tag":  "139PVD",
+                        "created":  "2026-08-12"
+                    },
+                    {
+                        "file":  "KS_140JED.pdf",
+                        "realized":  140.352242,
+                        "tag":  "140JED",
+                        "created":  "2026-08-21"
+                    },
+                    {
+                        "file":  "KS_140TRL.pdf",
+                        "realized":  140.756543,
+                        "tag":  "140TRL",
+                        "created":  "2026-08-04"
+                    },
+                    {
+                        "file":  "KS_141CPF.pdf",
+                        "realized":  141.099397,
+                        "tag":  "141CPF",
+                        "created":  "2026-08-13"
+                    },
+                    {
+                        "file":  "KS_141OJC.pdf",
+                        "realized":  141.551889,
+                        "tag":  "141OJC",
+                        "created":  "2026-08-22"
+                    },
+                    {
+                        "file":  "KS_142LSP.pdf",
+                        "realized":  142.450558,
+                        "tag":  "142LSP",
+                        "created":  "2026-08-05"
+                    },
+                    {
+                        "file":  "KS_143MQB.pdf",
+                        "realized":  143.485264,
+                        "tag":  "143MQB",
+                        "created":  "2026-08-14"
+                    },
+                    {
+                        "file":  "KS_148WLU.pdf",
+                        "realized":  148.863564,
+                        "tag":  "148WLU",
+                        "created":  "2026-08-23"
+                    },
+                    
+                    {
+                        "file":  "KS_116AMD.pdf",
+                        "realized":  116.017922,
+                        "tag":  "116AMD",
+                        "created":  "2026-08-27"
+                    },
+                    {
+                        "file":  "KS_118AIK.pdf",
+                        "realized":  118.012403,
+                        "tag":  "118AIK",
+                        "created":  "2026-08-27"
+                    },
+                    {
+                        "file":  "KS_120LIX.pdf",
+                        "realized":  120.43622,
+                        "tag":  "120LIX",
+                        "created":  "2026-08-27"
+                    },
+                    {
+                        "file":  "KS_122WDM.pdf",
+                        "realized":  122.851274,
+                        "tag":  "122WDM",
+                        "created":  "2026-08-27"
+                    },
+                    {
+                        "file":  "KS_124IXO.pdf",
+                        "realized":  124.342513,
+                        "tag":  "124IXO",
+                        "created":  "2026-08-27"
+                    },
+                    {
+                        "file":  "KS_126ZJY.pdf",
+                        "realized":  126.976218,
+                        "tag":  "126ZJY",
+                        "created":  "2026-08-27"
+                    },
+                    {
+                        "file":  "KS_128FLE.pdf",
+                        "realized":  128.208807,
+                        "tag":  "128FLE",
+                        "created":  "2026-08-27"
+                    },
+                    {
+                        "file":  "KS_130MYO.pdf",
+                        "realized":  130.497838,
+                        "tag":  "130MYO",
+                        "created":  "2026-08-27"
+                    },
+                    {
+                        "file":  "KS_132RJK.pdf",
+                        "realized":  132.667729,
+                        "tag":  "132RJK",
+                        "created":  "2026-08-27"
+                    },
+                    {
+                        "file":  "KS_133NNF.pdf",
+                        "realized":  133.519515,
+                        "tag":  "133NNF",
+                        "created":  "2026-08-27"
+                    },
+                    {
+                        "file":  "KS_135FYM.pdf",
+                        "realized":  135.228493,
+                        "tag":  "135FYM",
+                        "created":  "2026-08-27"
+                    },
+                    {
+                        "file":  "KS_138BFB.pdf",
+                        "realized":  138.045915,
+                        "tag":  "138BFB",
+                        "created":  "2026-08-27"
+                    },
+                    {
+                        "file":  "KS_139NFC.pdf",
+                        "realized":  139.50751,
+                        "tag":  "139NFC",
+                        "created":  "2026-08-27"
+                    },
+                    {
+                        "file":  "KS_140QQQ.pdf",
+                        "realized":  140.639964,
+                        "tag":  "140QQQ",
+                        "created":  "2026-08-27"
+                    },
+                    {
+                        "file":  "KS_142NFK.pdf",
+                        "realized":  142.507965,
+                        "tag":  "142NFK",
+                        "created":  "2026-08-27"
+                    },
+                    {
+                        "file":  "KS_140RAY.pdf",
+                        "realized":  140.655212,
+                        "tag":  "140RAY",
+                        "created":  "2026-08-28"
+                    },
+                    {
+                        "file":  "KS_146YRE.pdf",
+                        "realized":  146.948452,
+                        "tag":  "146YRE",
+                        "created":  "2026-08-28"
+                    },
+                    {
+                        "file":  "KS_115XXN.pdf",
+                        "realized":  115.919379,
+                        "tag":  "115XXN",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_116SZX.pdf",
+                        "realized":  116.730599,
+                        "tag":  "116SZX",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_117HPF.pdf",
+                        "realized":  117.291705,
+                        "tag":  "117HPF",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_117KGS.pdf",
+                        "realized":  117.394515,
+                        "tag":  "117KGS",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_117VXF.pdf",
+                        "realized":  117.842,
+                        "tag":  "117VXF",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_118JPD.pdf",
+                        "realized":  118.368514,
+                        "tag":  "118JPD",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_118KYH.pdf",
+                        "realized":  118.420517,
+                        "tag":  "118KYH",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_118PEA.pdf",
+                        "realized":  118.58284,
+                        "tag":  "118PEA",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_120LFZ.pdf",
+                        "realized":  120.431896,
+                        "tag":  "120LFZ",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_120OIA.pdf",
+                        "realized":  120.550296,
+                        "tag":  "120OIA",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_121AAU.pdf",
+                        "realized":  121.001138,
+                        "tag":  "121AAU",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_121GZW.pdf",
+                        "realized":  121.269003,
+                        "tag":  "121GZW",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_122GAY.pdf",
+                        "realized":  122.232135,
+                        "tag":  "122GAY",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_122GKV.pdf",
+                        "realized":  122.246757,
+                        "tag":  "122GKV",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_123MMF.pdf",
+                        "realized":  123.479574,
+                        "tag":  "123MMF",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_123NTL.pdf",
+                        "realized":  123.528732,
+                        "tag":  "123NTL",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_123RYG.pdf",
+                        "realized":  123.68969,
+                        "tag":  "123RYG",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_123SQI.pdf",
+                        "realized":  123.716431,
+                        "tag":  "123SQI",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_124RUL.pdf",
+                        "realized":  124.684058,
+                        "tag":  "124RUL",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_124VFQ.pdf",
+                        "realized":  124.815999,
+                        "tag":  "124VFQ",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_125KFN.pdf",
+                        "realized":  125.392751,
+                        "tag":  "125KFN",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_126JAC.pdf",
+                        "realized":  126.346268,
+                        "tag":  "126JAC",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_126VAP.pdf",
+                        "realized":  126.808546,
+                        "tag":  "126VAP",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_127BHT.pdf",
+                        "realized":  127.049898,
+                        "tag":  "127BHT",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_127SGB.pdf",
+                        "realized":  127.70124,
+                        "tag":  "127SGB",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_128CUL.pdf",
+                        "realized":  128.107135,
+                        "tag":  "128CUL",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_128EDX.pdf",
+                        "realized":  128.159593,
+                        "tag":  "128EDX",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_128IML.pdf",
+                        "realized":  128.32607,
+                        "tag":  "128IML",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_128UVV.pdf",
+                        "realized":  128.801491,
+                        "tag":  "128UVV",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_129TSX.pdf",
+                        "realized":  129.758705,
+                        "tag":  "129TSX",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_129VYJ.pdf",
+                        "realized":  129.843707,
+                        "tag":  "129VYJ",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_129WJZ.pdf",
+                        "realized":  129.86089,
+                        "tag":  "129WJZ",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_130EYV.pdf",
+                        "realized":  130.190544,
+                        "tag":  "130EYV",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_130XTC.pdf",
+                        "realized":  130.912836,
+                        "tag":  "130XTC",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_131OVY.pdf",
+                        "realized":  131.570892,
+                        "tag":  "131OVY",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_132QFK.pdf",
+                        "realized":  132.62335,
+                        "tag":  "132QFK",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_133AXB.pdf",
+                        "realized":  133.034081,
+                        "tag":  "133AXB",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_133COP.pdf",
+                        "realized":  133.098487,
+                        "tag":  "133COP",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_133JVS.pdf",
+                        "realized":  133.378243,
+                        "tag":  "133JVS",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_135BYK.pdf",
+                        "realized":  135.074533,
+                        "tag":  "135BYK",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_135DUA.pdf",
+                        "realized":  135.14497,
+                        "tag":  "135DUA",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_136BXS.pdf",
+                        "realized":  136.073509,
+                        "tag":  "136BXS",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_136IHK.pdf",
+                        "realized":  136.318616,
+                        "tag":  "136IHK",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_136TPD.pdf",
+                        "realized":  136.753129,
+                        "tag":  "136TPD",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_136YLC.pdf",
+                        "realized":  136.939463,
+                        "tag":  "136YLC",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_137CNK.pdf",
+                        "realized":  137.096723,
+                        "tag":  "137CNK",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_137XXY.pdf",
+                        "realized":  137.920005,
+                        "tag":  "137XXY",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_138WVH.pdf",
+                        "realized":  138.877617,
+                        "tag":  "138WVH",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_138XGH.pdf",
+                        "realized":  138.893889,
+                        "tag":  "138XGH",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_139HPC.pdf",
+                        "realized":  139.291534,
+                        "tag":  "139HPC",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_140MVY.pdf",
+                        "realized":  140.493969,
+                        "tag":  "140MVY",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_140OHX.pdf",
+                        "realized":  140.550125,
+                        "tag":  "140OHX",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_141BYK.pdf",
+                        "realized":  141.074533,
+                        "tag":  "141BYK",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_141DGU.pdf",
+                        "realized":  141.125398,
+                        "tag":  "141DGU",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_141IXE.pdf",
+                        "realized":  141.341944,
+                        "tag":  "141IXE",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_141SUH.pdf",
+                        "realized":  141.722292,
+                        "tag":  "141SUH",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_142ARV.pdf",
+                        "realized":  142.026343,
+                        "tag":  "142ARV",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_143WLB.pdf",
+                        "realized":  143.862483,
+                        "tag":  "143WLB",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_144OMQ.pdf",
+                        "realized":  144.557123,
+                        "tag":  "144OMQ",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_144VVP.pdf",
+                        "realized":  144.839611,
+                        "tag":  "144VVP",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_145XHF.pdf",
+                        "realized":  145.895255,
+                        "tag":  "145XHF",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_146JXA.pdf",
+                        "realized":  146.380178,
+                        "tag":  "146JXA",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_146ZGF.pdf",
+                        "realized":  146.970699,
+                        "tag":  "146ZGF",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_147QNC.pdf",
+                        "realized":  147.634729,
+                        "tag":  "147QNC",
+                        "created":  "2026-08-29"
+                    },
+                    {
+                        "file":  "KS_144LEB.pdf",
+                        "realized":  144.429051,
+                        "tag":  "144LEB",
+                        "created":  "2026-08-30"
+                    },
+                    {
+                        "file":  "KS_139ULA.pdf",
+                        "realized":  139.785503,
+                        "tag":  "139ULA",
+                        "created":  "2026-09-02"
+                    },
+                    {
+                        "file":  "KS_142XUF.pdf",
+                        "realized":  142.914486,
+                        "tag":  "142XUF",
+                        "created":  "2026-09-02"
+                    },
+                    {
+                        "file":  "KS_145POL.pdf",
+                        "realized":  145.598259,
+                        "tag":  "145POL",
+                        "created":  "2026-09-02"
+                    },
+                    {
+                        "file":  "KS_150QJR.pdf",
+                        "realized":  150.629665,
+                        "tag":  "150QJR",
+                        "created":  "2026-09-02"
+                    },
+                    {
+                        "file":  "KS_117DYB.pdf",
+                        "realized":  117.150944,
+                        "tag":  "117DYB",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_117QCW.pdf",
+                        "realized":  117.619595,
+                        "tag":  "117QCW",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_118ODG.pdf",
+                        "realized":  118.543241,
+                        "tag":  "118ODG",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_119JBI.pdf",
+                        "realized":  119.348088,
+                        "tag":  "119JBI",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_121FYB.pdf",
+                        "realized":  121.227868,
+                        "tag":  "121FYB",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_121WPC.pdf",
+                        "realized":  121.868457,
+                        "tag":  "121WPC",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_123ASS.pdf",
+                        "realized":  123.027651,
+                        "tag":  "123ASS",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_124UER.pdf",
+                        "realized":  124.776115,
+                        "tag":  "124UER",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_125YNF.pdf",
+                        "realized":  125.942592,
+                        "tag":  "125YNF",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_127HON.pdf",
+                        "realized":  127.29068,
+                        "tag":  "127HON",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_127IHX.pdf",
+                        "realized":  127.319356,
+                        "tag":  "127IHX",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_127UAX.pdf",
+                        "realized":  127.770539,
+                        "tag":  "127UAX",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_129PCM.pdf",
+                        "realized":  129.580564,
+                        "tag":  "129PCM",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_130IFR.pdf",
+                        "realized":  130.316056,
+                        "tag":  "130IFR",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_131FPE.pdf",
+                        "realized":  131.214725,
+                        "tag":  "131FPE",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_131GWY.pdf",
+                        "realized":  131.264679,
+                        "tag":  "131GWY",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_133MTC.pdf",
+                        "realized":  133.489759,
+                        "tag":  "133MTC",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_134DTP.pdf",
+                        "realized":  134.144345,
+                        "tag":  "134DTP",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_134QAJ.pdf",
+                        "realized":  134.615897,
+                        "tag":  "134QAJ",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_134XET.pdf",
+                        "realized":  134.891614,
+                        "tag":  "134XET",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_136HIO.pdf",
+                        "realized":  136.281862,
+                        "tag":  "136HIO",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_136PGB.pdf",
+                        "realized":  136.585856,
+                        "tag":  "136PGB",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_139NXI.pdf",
+                        "realized":  139.534479,
+                        "tag":  "139NXI",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_139RCQ.pdf",
+                        "realized":  139.657715,
+                        "tag":  "139RCQ",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_141LQK.pdf",
+                        "realized":  141.447315,
+                        "tag":  "141LQK",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_144LZZ.pdf",
+                        "realized":  144.461482,
+                        "tag":  "144LZZ",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_144WBM.pdf",
+                        "realized":  144.848316,
+                        "tag":  "144WBM",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_146SSC.pdf",
+                        "realized":  146.719049,
+                        "tag":  "146SSC",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_147BHL.pdf",
+                        "realized":  147.049442,
+                        "tag":  "147BHL",
+                        "created":  "2026-09-06"
+                    },
+                    {
+                        "file":  "KS_149MEB.pdf",
+                        "realized":  149.467513,
+                        "tag":  "149MEB",
+                        "created":  "2026-09-06"
+                    }
+                ]
+}

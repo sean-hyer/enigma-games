@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=1.0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta charset="utf-8" />
+    <title>Synchrotron</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body style="margin: 0">
+    <a id="homeBtn" href="index.php"
+       style="position:fixed; left:10px; top:10px; z-index:5000;
+          height:36px; padding:0 12px; border-radius:6px;
+          border:1px solid #ccc; background:#fff; color:#222;
+          font-family:system-ui,sans-serif; font-size:15px; font-weight:600;
+          display:flex; align-items:center; justify-content:center;
+          box-shadow:0 2px 6px rgba(0,0,0,0.15); text-decoration:none;">
+        ← Home
+    </a>
+
+    <button id="helpBtn" title="How to play"
+            style="position:fixed; right:10px; top:10px; z-index:5000;
+          width:36px; height:36px; padding:0; border-radius:6px;
+          border:1px solid #ccc; background:#fff; color:#222;
+          font-family:system-ui,sans-serif; font-size:18px; font-weight:600;
+          display:flex; align-items:center; justify-content:center;
+          box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+        ?
+    </button>
+
+    <button id="backspaceBtn" title="Delete last letter (long-press to clear)"
+            style="position:fixed; left:10px; bottom:calc(10px + env(safe-area-inset-bottom,0px)); z-index:5000;
+          width:48px; height:36px; padding:0; border-radius:6px;
+          border:1px solid #ccc; background:#fff; color:#222;
+          font-family:system-ui,sans-serif; font-size:20px; font-weight:600;
+          display:flex; align-items:center; justify-content:center;
+          box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+        ⌫
+    </button>
+
+    <button id="hintBtn"
+            style="position:fixed; left:10px; bottom:calc(118px + env(safe-area-inset-bottom,0px)); z-index:5000;
+          min-width:96px; height:36px; padding:0 12px; border-radius:6px;
+          border:1px solid #ccc; background:#fff; color:#222;
+          font-family:system-ui,sans-serif; font-size:15px; font-weight:600;
+          display:flex; align-items:center; justify-content:center;
+          box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+        Too Hard!
+    </button>
+    <div id="helpModal">
+        <div class="modal-content">
+            <button class="close-btn" aria-label="Close">&times;</button>
+            <h2 style="margin-top:0; margin-bottom:12px; font-size:22px;">An Enigma Game</h2>
+            <p>
+                Starting at the central node, type letters to travel from node to node.
+                Enter a link letter (lowercase) or an adjacent node (uppercase); or just tap the node.
+                Once you are in the synchrotron, there is no returning to the center.
+                You need to find the paths that will make <b>both links and nodes</b> simultaneously form two words.
+                When you have the two words, hit "Enter" or tap the central node to score them.
+                After you find all the words, be sure to <i>Gloat</i> to all your friends!
+            </p>
+        </div>
+    </div>
+
+    <div class="game-stage">
+        <div class="canvas-wrap">
+            <canvas id="myCanvas" width="500" height="720" style="width:100vw; height:100vh; display:block;"></canvas>
+        </div>
+    </div>
+    <script>
+        (async function(){
+
+        let puzzleFromList = null;
+        let puzzleIndex = 0;
+
+        try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const p = urlParams.get('p');
+        const url = p ? `synchrotron_vend.php?p=${encodeURIComponent(p)}` : 'synchrotron_vend.php';
+
+        const resp = await fetch(url);
+        if (resp.ok) {
+        puzzleFromList = await resp.json();
+        // Use the requested number when present, otherwise treat it as “today” (index 0 is fine for localStorage)
+        puzzleIndex = p ? (parseInt(p, 10) - 1) : 0;
+        } else {
+        const err = await resp.json().catch(() => ({}));
+        console.warn('Puzzle not available', err);
+        }
+        } catch (e) {
+        console.warn('Could not load puzzle', e);
+        }
+
+        const puzzle = puzzleFromList || ["bwshfglanxrandumpeczytddoklvei", "EAPTOILNCIRE", ["friendly", "wanted", "gallon", "salad"]];
+
+        const colorHi = `rgb(190, 175, 225)`;
+        const colorLo = `rgb(140, 195, 255)`;
+        const colorWin = `rgb(118, 225, 239)`;
+
+        document.body.style.backgroundColor = colorHi;
+        const canvas = document.getElementById("myCanvas");
+
+        // create overlay canvases that sit on top of the main canvas
+        function setOverlay(doc, cvs, name) {
+        const overlay = doc.createElement('canvas');
+        overlay.id = name;
+        overlay.style.position = 'absolute';
+        overlay.style.left = '0';
+        overlay.style.top = '0';
+        overlay.style.width = '100vw';
+        overlay.style.height = '100vh';
+        overlay.style.pointerEvents = 'none';
+        overlay.style.zIndex = '999';
+        overlay.width = cvs.width;
+        overlay.height = cvs.height;
+        doc.body.appendChild(overlay);
+        const tctx = overlay.getContext('2d');
+        return [overlay, tctx];
+        }
+        const [gOverlay, gctx] = setOverlay(document, canvas, 'gameOverlay');
+
+        function range(start, end) {
+        return Array.from({ length: end - start }, (x, i) => i + start);
+        }
+
+        // size and topology
+        let halfSize = 6, nLinks = 5 * halfSize, nNodes = 2 * halfSize;
+        let startLinks = range(0, halfSize);
+        let innerLinks = range(halfSize, 2 * halfSize);
+        let outerLinks = range(2 * halfSize, 3 * halfSize);
+        let inboundLinks = range(3 * halfSize, 4 * halfSize);
+        let outboundLinks = range(4 * halfSize, 5 * halfSize);
+        const linkLocs = [
+        [-1, 0], [-1, 2], [-1, 4], [-1, 6], [-1, 8], [-1, 10],
+        [0, 2], [2, 4], [4, 6], [6, 8], [8, 10], [10, 0],
+        [1, 3], [3, 5], [5, 7], [7, 9], [9, 11], [11, 1],
+        [0, 3], [2, 5], [4, 7], [6, 9], [8, 11], [10, 1],
+        [0, 1], [2, 3], [4, 5], [6, 7], [8, 9], [10, 11],
+        ];
+
+        // letters and words
+        const linkLetters = puzzle[0], nodes = puzzle[1], lWords = puzzle[2];
+
+        const links = linkLocs.map((loc, i) => [loc[0], loc[1], linkLetters[i]]);
+        let nWords = Array(lWords.length).fill(false);
+        let linkDisabled = Array(links.length).fill(false);
+        let done = false;
+
+        // state persistence via localStorage
+        const saveStateKey = 'enigma_synchrotron_dummy1';
+        const saved = (() => {
+        try { return JSON.parse(localStorage.getItem(saveStateKey) || 'null'); } catch (e) { return null; }
+        })();
+        // Don't restore nWords/linkDisabled yet — wait until after initial drawGame
+
+        function saveState() {
+        try {
+        localStorage.setItem(saveStateKey, JSON.stringify({puzzleIndex, lWords, nWords, linkDisabled }));
+        } catch (e) {
+        console.warn('Could not save state to localStorage', e);
+        }
+        }
+        function overwriteOK(saved_val, lWords, nWords, linkDisabled) {
+        try {
+        if (!saved_val || !Array.isArray(saved_val.nWords) || !Array.isArray(saved_val.linkDisabled)) {
+        return false;
+        }
+        if (saved_val.nWords.length !== nWords.length) return false;
+
+        for (let iw = 0; iw < nWords.length; ++iw) {
+        if (saved_val.lWords[iw] !== lWords[iw]) return false;
+        const savedWord = saved_val.nWords[iw];
+        const curWord   = nWords[iw];
+
+        // Treat non-string / non-array as “empty”
+        const savedLen = (typeof savedWord === 'string' || Array.isArray(savedWord)) ? savedWord.length : 0;
+        const curLen   = (typeof curWord === 'string' || Array.isArray(curWord)) ? curWord.length : 0;
+
+        if (savedLen !== 0 && savedLen !== lWords[iw].length) return false;
+        if (savedLen < curLen) return false;          // don’t reduce progress
+        }
+
+        if (saved_val.linkDisabled.length !== linkDisabled.length) return false;
+
+        for (let il = 0; il < linkDisabled.length; ++il) {
+        if (linkDisabled[il] && !saved_val.linkDisabled[il]) return false;
+        }
+        return true;
+        } catch (e) {
+        console.warn('overwriteOK failed', e);
+        return false;   // any unexpected error → treat as “do not restore”
+        }
+        }
+
+        // identify links which are used in undiscovered solutions, by walking through those lWords
+        function CalcNeededLinks(links, l_words, n_words) {
+            let retval = Array(links.length).fill(false);
+            for (let iw = 0; iw < l_words.length; ++iw) {
+                if (n_words[iw]) continue;  // already found, skip
+                let loc = -1;
+                for (let l of l_words[iw]) {
+                    for (let iLink = 0; iLink < links.length; ++iLink) {
+                        if (links[iLink][2] != l)
+                            continue;
+                        if (links[iLink][0] == loc || links[iLink][1] == loc) {
+                            retval[iLink] = true;
+                            loc = links[iLink][0] + links[iLink][1] - loc;
+                            break;
+                        }
+                    }
+                }
+            }
+            return retval;
+        }
+
+        // layout and graphing
+        let halfStep = Math.PI / halfSize;
+        const xCenter = canvas.width / 2, yCenter = xCenter;
+        const rOuter = 200, rInner = 125, rNode = 22, rStart = 27, rStar = 21;
+        const rLWord = 290, thetaLWord = -0.1 * Math.PI;
+        const rNWord = rLWord + 35, thetaNWord = thetaLWord * rLWord / rNWord;
+        const rWord = 280, vWord = 40, rHint = 370;
+        const thetaWord = 0.06 * Math.PI, thetaHint = -0.29;
+        const hText = 9, hTextH = 6, vText = 9, vTextH = 6, hHint = 96, vHint = 30;
+        const rInbound = 166, rOutbound = rInbound;
+        const thetaOffset = 6.28 * Math.random();
+
+        // design size of the original game
+        const designW = 500, designH = 720;
+        let logicalOffsetX = 0, logicalOffsetY = 0;
+
+        function xCoord(r, theta, xMid = xCenter) {
+        return logicalOffsetX + xMid + r * Math.sin(theta);
+        }
+        function yCoord(r, theta, yMid = yCenter) {
+        return logicalOffsetY + yMid + r * Math.cos(theta);
+        }
+
+        function circleAt(canvasContext, x, y, r = rNode, bright = false) {
+        canvasContext.lineWidth = 1;
+        canvasContext.beginPath();
+        canvasContext.arc(x, y, r, 0, 2 * Math.PI);
+        canvasContext.stroke();
+        canvasContext.fillStyle = bright ? "#FFFFFF" : "#FFEEDD";
+        canvasContext.fill();
+        }
+
+
+        function resizeOverlay() {
+        const winW = window.innerWidth;
+        const winH = window.innerHeight;
+
+        // Make the logical canvas have the same aspect ratio as the window
+        // so that CSS-stretching gives a uniform scale.
+        if (designW * winH < designH * winW) {          // window is wider → expand width
+        gOverlay.width  = Math.round(designH * winW / winH);
+        gOverlay.height = designH;
+        logicalOffsetX  = Math.round((gOverlay.width - designW) / 2);
+        logicalOffsetY  = 0;
+        } else {                                        // window is taller → expand height
+        gOverlay.width  = designW;
+        gOverlay.height = Math.round(designW * winH / winW);
+        logicalOffsetX  = 0;
+        logicalOffsetY  = Math.round((gOverlay.height - designH) / 2);
+        }
+
+        // CSS size = full viewport, no shift
+        [gOverlay].forEach(ov => {
+        ov.style.left   = '0';
+        ov.style.top    = '0';
+        ov.style.width  = '100%';
+        ov.style.height = '100%';
+        });
+
+        // (optional) hide the unused main canvas
+        canvas.style.display = 'none';
+
+        return drawGame(gctx, state ? state[1] : '');
+        }
+
+
+        let linkCenters = Array(links.length);
+        for (let i = 0; i < halfSize; i++) {
+        let theta = 2 * i * halfStep + thetaOffset;
+        let thetaOuter = theta + halfStep;
+
+        linkCenters[startLinks[i]] = [(rStart + rInner) / 2, theta + 0.75 * halfStep];
+        linkCenters[outerLinks[i]] = [rOuter - 0.1 * rNode, theta];
+        linkCenters[innerLinks[i]] = [rInner - 0.1 * rNode, theta + halfStep];
+        linkCenters[inboundLinks[i]] = [(rInner + rOuter) / 2, (theta + thetaOuter) / 2 - 0.125 * halfStep];
+        linkCenters[outboundLinks[i]] = [(rInner + rOuter) / 2, theta - 0.375 * halfStep];
+        }
+
+        let nodeCenters = Array(nNodes);
+        for (let i = 0; i < halfSize; i++) {
+        let theta = 2 * i * halfStep + thetaOffset;
+        let thetaOuter = theta - halfStep;
+        nodeCenters[i * 2] = [rInner, theta];
+        nodeCenters[i * 2 + 1] = [rOuter, thetaOuter];
+        }
+
+
+        function textAt(text, r, theta, hollow = true, ctx = gctx) {
+            if (hollow) {
+                ctx.lineWidth = 1;
+                ctx.font = text == "i" ? "24px Baron" : "26px Consolas";
+                ctx.strokeText(text, xCoord(r, theta) - hTextH, yCoord(r, theta) + vTextH);
+            } else {
+                ctx.fillStyle = "black";
+                ctx.lineWidth = 2;
+                ctx.font = text == "I" ? "24px Baron" : "26px Consolas";
+                ctx.fillText(text, xCoord(r, theta) - hText, yCoord(r, theta) + vText);
+            }
+        }
+
+        function drawGraph(canvasContext, loc, linkV, nodeV, rScale = 1.0, thetaShift = 0.0, xMid = xCenter, yMid = yCenter)
+        {
+        for (let i = 0; i < halfSize; i++) {
+            let theta = 2 * i * halfStep + thetaOffset + thetaShift;
+            let thetaOuter = theta + halfStep;
+            canvasContext.font = "24px Consolas";
+
+            // start link
+            let iLink = startLinks[i];
+            if (rScale == 1.0 && !linkDisabled[iLink]) {
+                let thetaAim = theta + (loc < 0 ? 1.25 : 1.5) * halfStep;
+                let rAim = rInner * 0.8 * rScale;
+                canvasContext.lineWidth = linkV[iLink] ? 4 : 2;
+                canvasContext.beginPath();
+                canvasContext.moveTo(xCoord(rStart, theta, xMid), yCoord(rStart, theta, yMid));
+                canvasContext.quadraticCurveTo(xCoord(rAim, thetaAim, xMid), yCoord(rAim, thetaAim, yMid), xCoord(rInner, theta, xMid), yCoord(rInner, theta, yMid));
+                canvasContext.stroke();
+                if (rScale == 1.0 && loc < 0) {
+                    textAt(links[iLink][2], 0.375 * rInner, theta + 0.2 * halfStep);
+                }
+            }
+
+            // outer-edge link
+            iLink = outerLinks[i];
+            if (!linkDisabled[iLink]) {
+                let rAim = (rOuter + 0.7 * rNode) * rScale;
+                let thetaAim = thetaOuter - halfStep;
+                let rEnd = (rOuter + 0.6 * rNode) * rScale;
+                canvasContext.lineWidth = linkV[iLink] ? 4 : 2;
+                canvasContext.beginPath();
+                canvasContext.moveTo(xCoord(rEnd, thetaOuter, xMid), yCoord(rEnd, thetaOuter, yMid));
+                canvasContext.quadraticCurveTo(xCoord(rAim, thetaAim, xMid), yCoord(rAim, thetaAim, yMid), xCoord(rEnd, thetaOuter - 2 * halfStep, xMid), yCoord(rEnd, thetaOuter - 2 * halfStep, yMid));
+                canvasContext.stroke();
+                if (rScale == 1.0) { textAt(links[iLink][2], rAim, thetaAim); }
+            }
+
+            // inner-edge link
+            iLink = innerLinks[i];
+            if (!linkDisabled[iLink]) {
+                let rAim = (rInner + 0.3 * rNode) * rScale;
+                let thetaAim = theta + halfStep;
+                let rEnd = (rInner + 0.1 * rNode) * rScale;
+                canvasContext.lineWidth = linkV[iLink] ? 4 : 2;
+                canvasContext.beginPath();
+                canvasContext.moveTo(xCoord(rEnd, theta, xMid), yCoord(rEnd, theta, yMid));
+                canvasContext.quadraticCurveTo(xCoord(rAim, thetaAim, xMid), yCoord(rAim, thetaAim, yMid), xCoord(rEnd, theta + 2 * halfStep, xMid), yCoord(rEnd, theta + 2 * halfStep, yMid));
+                canvasContext.stroke();
+                if (rScale == 1.0) { textAt(links[iLink][2], rInner - 0.8 * rNode, thetaAim); }
+            }
+
+            // outer-to-inner (conventionally anyway)
+            iLink = inboundLinks[i];
+            if (!linkDisabled[iLink]) {
+                let thetaAim = theta + 0.4 * halfStep;
+                canvasContext.lineWidth = linkV[iLink] ? 4 : 2;
+                canvasContext.beginPath();
+                canvasContext.moveTo(xCoord(rInner * rScale, theta, xMid), yCoord(rInner * rScale, theta, yMid));
+                canvasContext.quadraticCurveTo(xCoord(rOuter * rScale, thetaAim, xMid), yCoord(rOuter * rScale, thetaAim, yMid), xCoord(rOuter * rScale, thetaOuter, xMid), yCoord(rOuter * rScale, thetaOuter, yMid));
+                canvasContext.stroke();
+                if (rScale == 1.0) { textAt(links[iLink][2], rInbound * rScale, thetaAim + 0.14 * halfStep); }
+            }
+
+            // inner-to-outer
+            iLink = outboundLinks[i];
+            if (!linkDisabled[iLink]) {
+                let thetaAim = theta - 0.4 * halfStep;
+                canvasContext.lineWidth = linkV[iLink] ? 4 : 2;
+                canvasContext.beginPath();
+                canvasContext.moveTo(xCoord(rInner * rScale, theta, xMid), yCoord(rInner * rScale, theta, yMid));
+                canvasContext.quadraticCurveTo(xCoord(rOuter * rScale, thetaAim, xMid), yCoord(rOuter * rScale, thetaAim, yMid), xCoord(rOuter * rScale, theta - halfStep, xMid), yCoord(rOuter * rScale, theta - halfStep, yMid));
+                canvasContext.stroke();
+                if (rScale == 1.0) { textAt(links[iLink][2], rInbound * rScale, thetaAim - 0.14 * halfStep); }
+            }
+        }
+
+        // draw nodes in foreground (i.e., after links)
+        for (let i = 0; i < halfSize; i++) {
+        let theta = 2 * i * halfStep + thetaOffset + thetaShift;
+        let thetaOuter = theta - halfStep;
+
+        circleAt(canvasContext, xCoord(rInner * rScale, theta, xMid), yCoord(rInner * rScale, theta, yMid), rNode * rScale, loc == 2 * i);
+        circleAt(canvasContext, xCoord(rOuter * rScale, thetaOuter, xMid), yCoord(rOuter * rScale, thetaOuter, yMid), rNode * rScale, loc == 2 * i + 1);
+        if (rScale == 1.0) {
+        textAt(nodes[i * 2], rInner, theta, false, canvasContext);
+        textAt(nodes[i * 2 + 1], rOuter, thetaOuter, false, canvasContext);
+        }
+        }
+        }
+
+        function traceLinks(path)
+        {
+            let lWord = "", nWord = "";
+            let linkV = Array(nLinks).fill(false), nodeV = Array(nNodes).fill(false);
+            let loc = -1;
+            for (let ic = 0; ic < path.length; ++ic) {
+                let newLoc = -1, iLink = -1;
+                while (newLoc < 0 && ++iLink < nLinks) {
+                    if (links[iLink][2] == path[ic]) {
+                        if (links[iLink][0] == loc) { newLoc = links[iLink][1]; }
+                        else if (links[iLink][1] == loc) { newLoc = links[iLink][0]; }
+                    }
+                }
+                if (newLoc >= 0) {
+                    linkV[iLink] = true;
+                    nodeV[newLoc] = true;
+                    lWord += path[ic];
+                    nWord += nodes[newLoc];
+                    loc = newLoc;
+                }
+            }
+            return [loc, lWord, nWord, linkV, nodeV];
+        }
+        // Convert a travel-to-node request to a link equivalent
+        function linkLetterToUniqueAdjacentNode(loc, nodeLetter) 
+        {
+            let found = null;
+            for (let iLink = 0; iLink < nLinks; ++iLink) {
+                const a = links[iLink][0], b = links[iLink][1];
+                const neighbor = (a === loc) ? b : (b === loc) ? a : -2;
+                if (neighbor < 0) continue;               // ignore the center (-1)
+                if (nodes[neighbor] !== nodeLetter) continue;
+                if (found !== null) return null;          // two+ adjacent matches
+                found = links[iLink][2];
+            }
+            return found;
+        }
+
+        function drawGame(ctx, path) {
+        // compute and display progress
+        const lPow = 1.62;
+        let nFound = 0, nTotal = 0;
+        for (let iw = 0; iw < lWords.length; ++iw) {
+        nTotal += Math.pow(lWords[iw].length, lPow);
+        if (nWords[iw]) { nFound += Math.pow(lWords[iw].length, lPow); }
+        }
+
+        const [loc, lWord, nWord, linkV, nodeV] = traceLinks(path);
+
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+        // Base colour for the whole screen (prevents black top)
+        ctx.fillStyle = colorHi;
+        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+        if (nFound > 0) {
+        if (nFound === nTotal) {
+        document.body.style.backgroundColor = colorWin;
+        ctx.fillStyle = colorWin;
+        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        } else {
+        const ePow = 1.41;
+        const frac = nFound / nTotal;
+        const nMin = Math.round(ctx.canvas.height * Math.pow(frac, ePow));
+        const nMax = Math.round(ctx.canvas.height * (1.0 - Math.pow(1.0 - frac, ePow)));
+
+        // Rising band: colourHi at its top edge → colourLo at the bottom of the screen
+        const gradient = ctx.createLinearGradient(
+        0, ctx.canvas.height - nMax,
+        0, ctx.canvas.height - nMin
+        );
+        gradient.addColorStop(0, colorHi);
+        gradient.addColorStop(1, colorLo);
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, ctx.canvas.height - nMax, ctx.canvas.width, nMax);
+        }
+        }
+        drawGraph(ctx, loc, linkV, nodeV);
+
+        // draw the starting region
+        ctx.beginPath();
+        for (let i = 0; i <= halfSize; i++) {
+        let theta = 2 * i * halfStep + thetaOffset;
+        if (i == 0)
+        ctx.moveTo(xCoord(rStart, theta), yCoord(rStart, theta));
+        else
+        ctx.lineTo(xCoord(rStart, theta), yCoord(rStart, theta));
+        }
+        ctx.stroke();
+        ctx.fillStyle = "black";
+        ctx.fill();
+        if (loc < 0) {
+        ctx.strokeStyle = "white";
+        for (let i = 0; i < halfSize; i++) {
+        let theta = 2 * i * halfStep + thetaOffset;
+        ctx.beginPath();
+        ctx.moveTo(xCoord(0, theta), yCoord(0, theta));
+        ctx.lineTo(xCoord(rStar, theta), yCoord(rStar, theta));
+        ctx.stroke();
+        }
+        ctx.strokeStyle = "black";
+        }
+
+        // show the target words
+        for (let iw = 0; iw < lWords.length; ++iw) {
+        const wordLeft = xCoord(rWord, thetaWord);
+        const wordTop = yCoord(rWord, thetaWord) - lWords.length * vText + iw * vWord;
+        if (nWords[iw]) {
+        ctx.textAlign = "left";
+        ctx.font = "20px Consolas";
+        ctx.lineWidth = 1;
+        ctx.strokeText(lWords[iw], wordLeft, wordTop + 3);
+        ctx.strokeText(nWords[iw], wordLeft + hText + 4, wordTop + 3 * vText);
+        ctx.textAlign = "center";
+        }
+        else {
+        let hStep = 16, rLetter = 8;
+        for (let il = 0; il < lWords[iw].length; ++il) {
+        let left = wordLeft + il * hStep;
+        ctx.beginPath();
+        if (il) {
+        ctx.moveTo(left - 3, wordTop + 3);
+        ctx.quadraticCurveTo(left - 2, wordTop - 9, left + rNode / 2, wordTop + 2);
+        }
+        else {
+        ctx.moveTo(left - 3, wordTop - 3);
+        ctx.lineTo(left + rNode / 4, wordTop + 3);
+        }
+        ctx.stroke();
+        circleAt(ctx, left + rNode / 2, wordTop + rNode / 2, rLetter + 1, false);
+        if (il == lWords[iw].length - 1) {
+        ctx.fillStyle = "black";
+        ctx.font = "12px Consolas";
+        ctx.fillText(il + 1, left + rNode / 2, wordTop + rNode / 2 + 5);
+        }
+        }
+        }
+        }
+
+        // current state of play
+        ctx.font = "24px Verdana";
+        textAt(lWord, rLWord, thetaLWord);
+        textAt(nWord, rNWord, thetaNWord, false);
+
+        return [loc, lWord, nWord];
+        }
+
+        // ---------- safe restore (only once, before any drawing) ----------
+        if (saved &&
+                saved.puzzleIndex === puzzleIndex &&
+                Array.isArray(saved.lWords) &&
+                Array.isArray(saved.nWords) &&
+                Array.isArray(saved.linkDisabled) &&
+                overwriteOK(saved, lWords, nWords, linkDisabled)) {
+            try {
+                nWords       = saved.nWords;
+                linkDisabled = saved.linkDisabled;
+                done         = nWords.indexOf(false) < 0;
+            } catch (e) {
+                console.warn('Failed to apply saved state', e);
+            }
+        }
+
+        // ---------- first draw (now sees the restored nWords) ----------
+        window.addEventListener('resize', resizeOverlay);
+        var state = resizeOverlay(); // redraws the game
+        saveState();
+
+        function onEnter(path) {
+            const where = lWords.indexOf(path);
+            if (where >= 0) {
+                // Successful word – record it and clear the path
+                nWords[where] = state[2];
+                var justSolved = (nWords.indexOf(false) < 0) && !done;
+                done = nWords.indexOf(false) < 0;
+                if (justSolved && window.goatcounter && typeof goatcounter.count === 'function') {
+                goatcounter.count({
+                path: 'synchrotron-solved',
+                title: 'Synchrotron puzzle solved',
+                event: true
+                });
+                }
+                updateHintButton();
+                saveState();
+                return "";               // clear path only on success
+            }
+            // Invalid / partial path – keep the letters, just give feedback
+            // (You can later replace this with a nicer on-screen message)
+            console.log('Not in word list');
+            return path;                 // do NOT clear
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (helpModal.classList.contains('visible')) {
+                if (event.key === 'Escape') {
+                    helpModal.classList.remove('visible');
+                }
+                return; // modal is open: never change the path
+            }
+
+            let path = state[1];
+            if (event.key === 'Backspace') {
+                event.preventDefault();
+                path = path.slice(0, -1);
+            } else if (event.key === 'Enter') {
+                path = onEnter(path);
+            } else if (event.key === 'Escape') {
+                path = '';
+            } else if (event.key.length === 1) {
+                if (/^[A-Z]$/.test(event.key)) {
+                    const linkLetter = linkLetterToUniqueAdjacentNode(state[0], event.key);
+                    if (linkLetter) path += linkLetter;   // unique adjacent node
+                    // else: ignore — not present, or not unique
+                } else {
+                    path += event.key.toLowerCase();      // user entered a link directly
+                }        
+            }
+            state = drawGame(gctx, path);
+        });
+
+        async function shareOrCopy(canvas) {
+        try {
+        const blob = await canvas.convertToBlob({ type: 'image/png' });
+        const file = new File([blob], 'synchrotron.png', { type: 'image/png' });
+
+        // Prefer the native share sheet when available
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        const url = window.location.href;
+        await navigator.share({
+        files: [file],
+        title: 'Synchrotron',
+        // Combine the enigmatic text + URL into a single text block
+        text: `<smiles enigmatically>\n${url}`
+        // You can also omit the `url` property entirely if you prefer
+        // url: url
+        });
+        return; // shared successfully
+        }
+        } catch (err) {
+        // User cancelled the share sheet, or share is unavailable
+        console.log('Share unavailable or cancelled', err);
+        }
+
+        // Fallback: copy image to clipboard (desktop + older browsers)
+        try {
+        const blob = await canvas.convertToBlob({ type: 'image/png' });
+        const item = new ClipboardItem({ 'image/png': blob });
+        await navigator.clipboard.write([item]);
+        console.log('Image copied to clipboard');
+        // Optional: show a brief “Copied!” toast here
+        } catch (err) {
+        console.error('Could not copy image', err);
+        }
+        }
+
+        function toLogicalPoint(event) {
+        // bounding rect is in CSS pixels; canvas.width/height are the logical drawing units
+        const rect = gOverlay.getBoundingClientRect();
+        const scaleX = gOverlay.width / rect.width;
+        const scaleY = gOverlay.height / rect.height;
+        const x = (event.clientX - rect.left) * scaleX;
+        const y = (event.clientY - rect.top) * scaleY;
+        return { x, y };
+        }
+
+        document.addEventListener('click', (event) => {
+        const p = toLogicalPoint(event);
+        const mouseX = p.x, mouseY = p.y;
+
+        function inCircle(r, theta) {
+        let dx = mouseX - xCoord(r, theta);
+        let dy = mouseY - yCoord(r, theta);
+        return dx * dx + dy * dy < 3 * rNode * rNode;
+        }
+
+        let targetNode = -1;
+        for (let i = 0; i < halfSize && targetNode < 0; i++) {
+        let theta = 2 * i * halfStep + thetaOffset;
+        let thetaOuter = theta - halfStep;
+        if (inCircle(rInner, theta)) { targetNode = 2 * i; }
+        if (inCircle(rOuter, thetaOuter)) { targetNode = 2 * i + 1; }
+        }
+
+        if (targetNode >= 0) {
+        let loc = state[0];
+        for (let iLink = 0; iLink < nLinks; ++iLink) {
+        if ((links[iLink][0] == loc && links[iLink][1] == targetNode)
+        || (links[iLink][1] == loc && links[iLink][0] == targetNode)) {
+        state = drawGame(gctx, state[1] + links[iLink][2]);
+        break;
+        }
+        }
+        }
+
+        });   // end of click listener
+
+        // center area click or click-and-hold
+        const CENTER_LONG_MS = 550;
+        let centerTimer = null;
+        let centerLongDone = false;
+
+        function pointInCenter(event) {
+            const p = toLogicalPoint(event);
+            const dx = p.x - xCoord(0, 0);
+            const dy = p.y - yCoord(0, 0);
+            return dx * dx + dy * dy < 3 * rNode * rNode;
+        }
+
+        function activateCenter(longPress) {
+            const path = state[1] || '';
+            const valid = lWords.indexOf(path) >= 0;
+            if (longPress && !valid) {
+                state = drawGame(gctx, '');
+            } else {
+                state = drawGame(gctx, onEnter(path));
+            }
+        }
+
+        document.addEventListener('pointerdown', (event) => {
+            if (helpModal.classList.contains('visible')) return;
+            if (!pointInCenter(event)) return;
+            centerLongDone = false;
+            centerTimer = setTimeout(() => {
+                centerTimer = null;
+                centerLongDone = true;
+                activateCenter(true);
+            }, CENTER_LONG_MS);
+        });
+
+        function cancelCenterTimer() {
+            if (centerTimer !== null) {
+                clearTimeout(centerTimer);
+                centerTimer = null;
+            }
+        }
+
+        document.addEventListener('pointerup', (event) => {
+            if (centerTimer === null && !centerLongDone) return;
+            if (centerLongDone) {
+                centerLongDone = false;
+                return;
+            }
+            cancelCenterTimer();
+            if (pointInCenter(event)) activateCenter(false);
+        });
+
+        document.addEventListener('pointerleave', cancelCenterTimer);
+        document.addEventListener('pointercancel', cancelCenterTimer);
+
+        // ---------- Hint button ----------
+        const hintBtn = document.getElementById('hintBtn');
+        function updateHintButton() {
+            if (hintBtn) {
+                hintBtn.textContent = done ? 'Gloat' : 'Too Hard!';
+            }
+        }
+        // Make sure the label is correct after restore / first draw
+        updateHintButton();
+
+        if (hintBtn) {
+            hintBtn.addEventListener('click', () => {
+                if (done) {
+                    // Gloat / share
+                    const shareSize = 200;
+                    const tempCanvas = new OffscreenCanvas(shareSize, shareSize);
+                    const tempCtx = tempCanvas.getContext('2d');
+                    let nHints = linkDisabled.filter(Boolean).length;
+                    let green = (3071 - 70 * nHints) / (12 + nHints);
+                    let red = 135 - green / 4;
+                    tempCtx.fillStyle = `rgb(${red}, ${green}, ${green})`;
+                    tempCtx.fillRect(0, 0, shareSize, shareSize);
+
+                    const savedOffsetX = logicalOffsetX;
+                    const savedOffsetY = logicalOffsetY;
+                    logicalOffsetX = 0;
+                    logicalOffsetY = 0;
+                    const thetaShift = Math.random() * 2 * Math.PI;
+                    const linkNeeded = CalcNeededLinks(links, lWords, Array(lWords.length).fill(false));
+                    drawGraph(tempCtx, -1, linkNeeded, Array(nNodes).fill(true), 0.4, thetaShift, shareSize / 2, shareSize / 2);
+                    logicalOffsetX = savedOffsetX;
+                    logicalOffsetY = savedOffsetY;
+
+                    shareOrCopy(tempCanvas);
+                } else {
+                    // Too Hard – disable a random non-needed link
+                    const linkNeeded = CalcNeededLinks(links, lWords, nWords);
+                    const removable = [];
+                    for (let ii = 0; ii < nLinks; ++ii) {
+                        if (!linkDisabled[ii] && !linkNeeded[ii]) 
+                            removable.push(ii);
+                    }
+                    if (removable.length) {
+                        const remove = removable[Math.floor(Math.random() * removable.length)];
+                        linkDisabled[remove] = true;
+                        state = drawGame(gctx, state[1]);
+                    }
+                    saveState();
+                }
+            });
+        }
+
+        // ---------- Backspace button ----------
+        const backspaceBtn = document.getElementById('backspaceBtn');
+        let backspaceTimer = null;
+        const LONG_PRESS_MS = 550;
+
+        if (backspaceBtn) {
+        backspaceBtn.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        backspaceTimer = setTimeout(() => {
+        state = drawGame(gctx, '');
+        backspaceTimer = null;
+        }, LONG_PRESS_MS);
+        });
+
+        backspaceBtn.addEventListener('pointerup', (e) => {
+        e.preventDefault();
+        if (backspaceTimer !== null) {
+        clearTimeout(backspaceTimer);
+        backspaceTimer = null;
+        const newPath = (state[1] || '').slice(0, -1);
+        state = drawGame(gctx, newPath);
+        }
+        });
+
+        backspaceBtn.addEventListener('pointerleave', () => {
+        if (backspaceTimer !== null) {
+        clearTimeout(backspaceTimer);
+        backspaceTimer = null;
+        }
+        });
+        }
+
+        })();   // end of the big IIFE
+        const helpBtn   = document.getElementById('helpBtn');
+        const helpModal = document.getElementById('helpModal');
+        const closeBtn  = helpModal.querySelector('.close-btn');
+
+        helpBtn.addEventListener('click', () => {
+        helpModal.classList.add('visible');
+        });
+
+        closeBtn.addEventListener('click', () => {
+        helpModal.classList.remove('visible');
+        });
+
+        helpModal.addEventListener('click', (e) => {
+        if (e.target === helpModal) {
+        helpModal.classList.remove('visible');
+        }
+        });
+
+    </script>
+
+    <script data-goatcounter="https://enigmagames.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+    <script>
+        (function () {
+        var sent = false;
+        function playStarted() {
+        if (sent) return;
+        sent = true;
+        if (window.goatcounter && typeof goatcounter.count === 'function') {
+        goatcounter.count({
+        path: 'synchrotron-play',
+        title: 'Synchrotron play started',
+        event: true
+        });
+        }
+        }
+        var canvas = document.getElementById('myCanvas');
+        if (canvas) canvas.addEventListener('click', playStarted);
+        document.addEventListener('keydown', function (e) {
+        if (e.key && e.key.length === 1 && /[a-zA-Z]/i.test(e.key)) playStarted();
+        });
+        })();
+    </script>
+</body>
+
+</html>
