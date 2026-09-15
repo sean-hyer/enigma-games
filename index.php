@@ -23,6 +23,7 @@
 		<p>Play our games, early and often!</p>
 		<a class="play" href="synchrotron.html">Synchrotron</a>
 		<a class="play" href="berserker.html">Berserker Sudoku</a>
+		<a class="play" href="numerals.html">Numeral Puzzles</a>
 		<!-- small class="info">Upload index.php and the game file (synchrotron.html). The game file currently redirects to the original (synchrotron_4.html) to preserve the original content.</small -->
 	</div>
 <script>
