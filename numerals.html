@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Base-3 Line-Count Numeral Calculator</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --panel-bg: #334155;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #475569;
+      --sub-color: #f87171;
+      --add-color: #4ade80;
+      --num1-color: #f59e0b;
+      --num2-color: #a855f7;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+    header { text-align: center; margin-bottom: 20px; }
+    header h1 { font-size: 1.8rem; color: var(--accent); margin-bottom: 6px; }
+    header p { color: var(--text-muted); font-size: 0.95rem; }
+    .main-layout { display: grid; grid-template-columns: 260px 1fr; gap: 20px; flex: 1; max-width: 1450px; margin: 0 auto; width: 100%; }
+    .palette { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; height: fit-content; }
+    .palette h2 { font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; color: var(--accent); }
+    .shape-card { background: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 12px; cursor: grab; user-select: none; transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s; }
+    .shape-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(56, 189, 248, 0.2); }
+    .shape-card:active { cursor: grabbing; }
+    .shape-preview { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; background: #0f172a; border-radius: 6px; }
+    .shape-info { display: flex; flex-direction: column; }
+    .shape-info .name { font-weight: 600; font-size: 0.9rem; }
+    .shape-info .meta { font-size: 0.75rem; color: var(--text-muted); }
+    .workspace { display: flex; flex-direction: column; gap: 20px; }
+    .calc-inputs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .number-box { background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .number-box.num1-box { border-top: 4px solid var(--num1-color); }
+    .number-box.num2-box { border-top: 4px solid var(--num2-color); }
+    .number-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+    .number-header h3 { font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+    .num1-title { color: var(--num1-color); }
+    .num2-title { color: var(--num2-color); }
+    .number-meta { font-size: 0.9rem; font-weight: bold; color: var(--accent); }
+    .decimal-input-row { display: flex; gap: 8px; align-items: center; }
+    .decimal-input-row label { font-size: 0.85rem; color: var(--text-muted); }
+    .decimal-input-row input { background: #0f172a; border: 1px solid var(--border-color); color: var(--text-main); padding: 4px 8px; border-radius: 6px; width: 90px; font-weight: bold; }
+    .drop-zones-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .drop-zone { background: #0f172a; border: 2px dashed var(--border-color); border-radius: 8px; padding: 10px; min-height: 140px; display: flex; flex-direction: column; transition: border-color 0.2s, background-color 0.2s; }
+    .drop-zone.drag-over { border-color: var(--accent); background-color: #1e293b; }
+    .zone-title { font-size: 0.8rem; font-weight: bold; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .zone-title.sub-title { color: var(--sub-color); }
+    .zone-title.add-title { color: var(--add-color); }
+    .drop-zone-body { flex: 1; display: flex; flex-wrap: wrap; gap: 6px; align-content: flex-start; }
+    .drop-zone-empty-msg { color: var(--text-muted); font-style: italic; font-size: 0.8rem; width: 100%; text-align: center; margin-top: 25px; pointer-events: none; }
+    .placed-shape { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 6px; padding: 4px 8px; display: flex; align-items: center; gap: 6px; cursor: pointer; position: relative; font-size: 0.85rem; transition: border-color 0.15s, transform 0.15s; }
+    .placed-shape:hover { border-color: var(--sub-color); transform: scale(1.05); }
+    .placed-shape .remove-badge { position: absolute; top: -5px; right: -5px; background: var(--sub-color); color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0; transition: opacity 0.15s; }
+    .placed-shape:hover .remove-badge { opacity: 1; }
+    .controls-bar { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn { background: var(--panel-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.15s, border-color 0.15s; font-size: 0.9rem; }
+    .btn:hover { background: var(--border-color); }
+    .btn-primary { background: var(--accent); color: #0f172a; border-color: var(--accent); }
+    .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .btn-danger { border-color: var(--sub-color); color: var(--sub-color); }
+    .btn-danger:hover { background: var(--sub-color); color: white; }
+    .result-card { background: var(--card-bg); border: 2px solid var(--accent); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .result-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    .summary-box { background: var(--panel-bg); border-radius: 8px; padding: 12px; text-align: center; }
+    .summary-box .label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .summary-box .value { font-size: 1.2rem; font-weight: bold; color: var(--accent); }
+    .steps-container { background: #0f172a; border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; max-height: 280px; overflow-y: auto; font-family: 'Courier New', Courier, monospace; font-size: 0.88rem; display: flex; flex-direction: column; gap: 8px; }
+    .step-item { padding: 6px 10px; border-left: 3px solid var(--accent); background: rgba(56, 189, 248, 0.05); border-radius: 0 4px 4px 0; white-space: pre-wrap; }
+    svg { overflow: visible; }
+    .shape-svg { stroke: var(--accent); stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Seanian Numeral Calculator</h1>
+    <p>Line-Count Base-3 Numeral Workbench for Addition (+), Subtraction (-), Multiplication (×), and Division (÷)</p>
+  </header>
+
+  <div class="main-layout">
+    <div class="palette">
+      <h2>Shape Palette</h2>
+      <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 4px;">Drag shapes or click to add</p>
+
+      <div class="shape-card" draggable="true" data-exp="0">
+        <div class="shape-preview"><svg width="28" height="28" viewBox="-15 -15 30 30"><circle cx="0" cy="0" r="3.5" fill="var(--accent)" /></svg></div>
+        <div class="shape-info"><span class="name">Dot (0 lines)</span><span class="meta">3<sup>0</sup> = 1</span></div>
+      </div>
+
+      <div class="shape-card" draggable="true" data-exp="1">
+        <div class="shape-preview"><svg width="28" height="28" viewBox="-15 -15 30 30"><line x1="-10" y1="0" x2="10" y2="0" class="shape-svg" /></svg></div>
+        <div class="shape-info"><span class="name">Line (1 line)</span><span class="meta">3<sup>1</sup> = 3</span></div>
+      </div>
+
+      <div class="shape-card" draggable="true" data-exp="2">
+        <div class="shape-preview"><svg width="28" height="28" viewBox="-15 -15 30 30"><polyline points="-9,-6 0,8 9,-6" class="shape-svg" /></svg></div>
+        <div class="shape-info"><span class="name">V (2 lines)</span><span class="meta">3<sup>2</sup> = 9</span></div>
+      </div>
+
+      <div class="shape-card" draggable="true" data-exp="3">
+        <div class="shape-preview"><svg width="28" height="28" viewBox="-15 -15 30 30"><polygon points="0,-10 9,8 -9,8" class="shape-svg" /></svg></div>
+        <div class="shape-info"><span class="name">Triangle (3 lines)</span><span class="meta">3<sup>3</sup> = 27</span></div>
+      </div>
+
+      <div class="shape-card" draggable="true" data-exp="4">
+        <div class="shape-preview"><svg width="28" height="28" viewBox="-15 -15 30 30"><rect x="-8" y="-8" width="16" height="16" class="shape-svg" /></svg></div>
+        <div class="shape-info"><span class="name">Square (4 lines)</span><span class="meta">3<sup>4</sup> = 81</span></div>
+      </div>
+
+      <div class="shape-card" draggable="true" data-exp="5">
+        <div class="shape-preview"><svg width="28" height="28" viewBox="-15 -15 30 30"><polygon points="0,-10 9.5,-3 5.9,8.5 -5.9,8.5 -9.5,-3" class="shape-svg" /></svg></div>
+        <div class="shape-info"><span class="name">Pentagon (5 lines)</span><span class="meta">3<sup>5</sup> = 243</span></div>
+      </div>
+
+      <div class="shape-card" draggable="true" data-exp="6">
+        <div class="shape-preview"><svg width="28" height="28" viewBox="-15 -15 30 30"><polygon points="10,0 5,8.66 -5,8.66 -10,0 -5,-8.66 5,-8.66" class="shape-svg" /></svg></div>
+        <div class="shape-info"><span class="name">Hexagon (6 lines)</span><span class="meta">3<sup>6</sup> = 729</span></div>
+      </div>
+    </div>
+
+    <div class="workspace">
+      <div class="calc-inputs-grid">
+        <div class="number-box num1-box" id="num1-card">
+          <div class="number-header">
+            <h3 class="num1-title"><span>1️⃣</span> Number 1</h3>
+            <span class="number-meta" id="num1-val-display">Value: 0</span>
+          </div>
+
+          <div class="decimal-input-row">
+            <label for="num1-dec-input">Set Decimal Value:</label>
+            <input type="number" id="num1-dec-input" value="0" />
+          </div>
+
+          <div class="drop-zones-pair">
+            <div class="drop-zone" id="num1-sub-zone" data-num="1" data-sign="sub">
+              <div class="zone-title sub-title">Subtracted (-)</div>
+              <div class="drop-zone-body"><span class="drop-zone-empty-msg">Drop shapes here</span></div>
+            </div>
+
+            <div class="drop-zone" id="num1-add-zone" data-num="1" data-sign="add">
+              <div class="zone-title add-title">Added (+)</div>
+              <div class="drop-zone-body"><span class="drop-zone-empty-msg">Drop shapes here</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="number-box num2-box" id="num2-card">
+          <div class="number-header">
+            <h3 class="num2-title"><span>2️⃣</span> Number 2</h3>
+            <span class="number-meta" id="num2-val-display">Value: 0</span>
+          </div>
+
+          <div class="decimal-input-row">
+            <label for="num2-dec-input">Set Decimal Value:</label>
+            <input type="number" id="num2-dec-input" value="0" />
+          </div>
+
+          <div class="drop-zones-pair">
+            <div class="drop-zone" id="num2-sub-zone" data-num="2" data-sign="sub">
+              <div class="zone-title sub-title">Subtracted (-)</div>
+              <div class="drop-zone-body"><span class="drop-zone-empty-msg">Drop shapes here</span></div>
+            </div>
+
+            <div class="drop-zone" id="num2-add-zone" data-num="2" data-sign="add">
+              <div class="zone-title add-title">Added (+)</div>
+              <div class="drop-zone-body"><span class="drop-zone-empty-msg">Drop shapes here</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls-bar">
+        <button class="btn btn-primary" id="btn-add">➕ Add (N1 + N2)</button>
+        <button class="btn btn-primary" id="btn-sub">➖ Subtract (N1 - N2)</button>
+        <button class="btn btn-primary" id="btn-mul">✖️ Multiply (N1 × N2)</button>
+        <button class="btn btn-primary" id="btn-div">➗ Divide (N1 ÷ N2)</button>
+        <button class="btn" id="btn-clear-num1">🧹 Clear Number 1</button>
+        <button class="btn" id="btn-clear-num2">🧹 Clear Number 2</button>
+        <button class="btn btn-danger" id="btn-clear-all">🗑️ Clear All</button>
+      </div>
+
+      <div class="result-card" id="result-section">
+        <h2 style="font-size: 1.2rem; color: var(--accent);">Calculation Result</h2>
+
+        <div class="result-summary">
+          <div class="summary-box"><div class="label">Expression</div><div class="value" id="res-expr">0 + 0</div></div>
+          <div class="summary-box"><div class="label">Decimal Result</div><div class="value" id="res-decimal">0</div></div>
+          <div class="summary-box"><div class="label">Simplified Numeral</div><div class="value" id="res-numeral">0</div></div>
+        </div>
+
+        <div style="margin-top: 10px;">
+          <h3 style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 6px;">Simplified Visual Representation</h3>
+          <div id="res-visual-container" style="background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 12px; min-height: 50px;">
+            <span style="color: var(--text-muted); font-size: 0.85rem;">No result calculated yet.</span>
+          </div>
+        </div>
+
+        <div style="margin-top: 10px;">
+          <h3 style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 6px;">Derivation & Simplification Steps</h3>
+          <div class="steps-container" id="res-steps-log">
+            <div class="step-item">Select an operation above (+, -, ×, ÷) to perform step-by-step balanced ternary calculations.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SHAPES = [
+      { exp: 0, name: 'dot', lines: 0, val: 1 },
+      { exp: 1, name: 'line', lines: 1, val: 3 },
+      { exp: 2, name: 'V', lines: 2, val: 9 },
+      { exp: 3, name: 'triangle', lines: 3, val: 27 },
+      { exp: 4, name: 'square', lines: 4, val: 81 },
+      { exp: 5, name: 'pentagon', lines: 5, val: 243 },
+      { exp: 6, name: 'hexagon', lines: 6, val: 729 }
+    ];
+
+    function getShapeName(exp) {
+      const found = SHAPES.find(s => s.exp === exp);
+      return found ? found.name : `${exp}-gon`;
+    }
+
+    const numState = {
+      1: { sub: [], add: [] },
+      2: { sub: [], add: [] }
+    };
+
+    let draggedExp = null;
+
+    function renderShapeSVG(exp, size = 20) {
+      if (exp === 0) {
+        return `<svg width="${size}" height="${size}" viewBox="-15 -15 30 30"><circle cx="0" cy="0" r="4" fill="var(--accent)" /></svg>`;
+      }
+      let path = '';
+      if (exp === 1) {
+        path = `<line x1="-10" y1="0" x2="10" y2="0" class="shape-svg" />`;
+      } else if (exp === 2) {
+        path = `<polyline points="-9,-6 0,8 9,-6" class="shape-svg" />`;
+      } else if (exp === 3) {
+        path = `<polygon points="0,-10 9,8 -9,8" class="shape-svg" />`;
+      } else if (exp === 4) {
+        path = `<rect x="-8" y="-8" width="16" height="16" class="shape-svg" />`;
+      } else if (exp === 5) {
+        path = `<polygon points="0,-10 9.5,-3 5.9,8.5 -5.9,8.5 -9.5,-3" class="shape-svg" />`;
+      } else if (exp === 6) {
+        path = `<polygon points="10,0 5,8.66 -5,8.66 -10,0 -5,-8.66 5,-8.66" class="shape-svg" />`;
+      } else {
+        path = `<polygon points="0,-10 9,-3 6,8 -6,8 -9,-3" class="shape-svg" />`;
+      }
+      return `<svg width="${size}" height="${size}" viewBox="-15 -15 30 30">${path}</svg>`;
+    }
+
+    function intToBalancedTernary(num) {
+      if (num === 0) return { sub: [], add: [] };
+      let n = num;
+      const sub = [];
+      const add = [];
+      let exp = 0;
+      while (n !== 0) {
+        let rem = n % 3;
+        n = Math.floor(n / 3);
+        if (rem === 2 || rem === -1) {
+          rem = -1;
+          n += 1;
+        } else if (rem === -2) {
+          rem = 1;
+          n -= 1;
+        }
+        if (rem === 1) add.push(exp);
+        else if (rem === -1) sub.push(exp);
+        exp++;
+      }
+      return { sub, add };
+    }
+
+    function calcNumberValue(numKey) {
+      const state = numState[numKey];
+      const addVal = state.add.reduce((sum, exp) => sum + Math.pow(3, exp), 0);
+      const subVal = state.sub.reduce((sum, exp) => sum + Math.pow(3, exp), 0);
+      return addVal - subVal;
+    }
+
+    function updateNumberUI(numKey) {
+      const val = calcNumberValue(numKey);
+      document.getElementById(`num${numKey}-val-display`).textContent = `Value: ${val}`;
+      document.getElementById(`num${numKey}-dec-input`).value = val;
+
+      ['sub', 'add'].forEach(sign => {
+        const zone = document.getElementById(`num${numKey}-${sign}-zone`);
+        const body = zone.querySelector('.drop-zone-body');
+        body.innerHTML = '';
+
+        const arr = numState[numKey][sign];
+        if (arr.length === 0) {
+          body.innerHTML = `<span class="drop-zone-empty-msg">Drop shapes here</span>`;
+        } else {
+          arr.forEach((exp, idx) => {
+            const chip = document.createElement('div');
+            chip.className = 'placed-shape';
+            chip.title = 'Click to remove';
+            chip.innerHTML = `${renderShapeSVG(exp, 18)} <span>${getShapeName(exp)}</span><span class="remove-badge">×</span>`;
+            chip.addEventListener('click', () => {
+              numState[numKey][sign].splice(idx, 1);
+              updateNumberUI(numKey);
+            });
+            body.appendChild(chip);
+          });
+        }
+      });
+    }
+
+    function setNumberFromDecimal(numKey, val) {
+      const bt = intToBalancedTernary(val);
+      numState[numKey].sub = bt.sub;
+      numState[numKey].add = bt.add;
+      updateNumberUI(numKey);
+    }
+
+    document.querySelectorAll('.shape-card').forEach(card => {
+      card.addEventListener('dragstart', (e) => {
+        draggedExp = parseInt(card.dataset.exp, 10);
+        e.dataTransfer.setData('text/plain', card.dataset.exp);
+      });
+      card.addEventListener('click', () => {
+        const exp = parseInt(card.dataset.exp, 10);
+        numState[1].add.push(exp);
+        numState[1].add.sort((a, b) => a - b);
+        updateNumberUI(1);
+      });
+    });
+
+    document.querySelectorAll('.drop-zone').forEach(zone => {
+      zone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        zone.classList.add('drag-over');
+      });
+      zone.addEventListener('dragleave', () => {
+        zone.classList.remove('drag-over');
+      });
+      zone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        zone.classList.remove('drag-over');
+        const numKey = zone.dataset.num;
+        const sign = zone.dataset.sign;
+        if (draggedExp !== null) {
+          numState[numKey][sign].push(draggedExp);
+          numState[numKey][sign].sort((a, b) => a - b);
+          draggedExp = null;
+          updateNumberUI(numKey);
+        }
+      });
+    });
+
+    [1, 2].forEach(numKey => {
+      const input = document.getElementById(`num${numKey}-dec-input`);
+      input.addEventListener('change', () => {
+        let val = parseInt(input.value, 10);
+        if (isNaN(val)) val = 0;
+        setNumberFromDecimal(numKey, val);
+      });
+    });
+
+    document.getElementById('btn-clear-num1').addEventListener('click', () => {
+      numState[1] = { sub: [], add: [] };
+      updateNumberUI(1);
+    });
+    document.getElementById('btn-clear-num2').addEventListener('click', () => {
+      numState[2] = { sub: [], add: [] };
+      updateNumberUI(2);
+    });
+    document.getElementById('btn-clear-all').addEventListener('click', () => {
+      numState[1] = { sub: [], add: [] };
+      numState[2] = { sub: [], add: [] };
+      updateNumberUI(1);
+      updateNumberUI(2);
+      document.getElementById('res-expr').textContent = '0 + 0';
+      document.getElementById('res-decimal').textContent = '0';
+      document.getElementById('res-numeral').textContent = '0';
+      document.getElementById('res-visual-container').innerHTML = '<span style="color: var(--text-muted); font-size: 0.85rem;">Cleared.</span>';
+      document.getElementById('res-steps-log').innerHTML = '<div class="step-item">Cleared calculation steps.</div>';
+    });
+
+    function formatTernaryList(sub, add) {
+      const subStr = sub.length > 0 ? sub.map(getShapeName).join(' ') : '0';
+      const addStr = add.length > 0 ? add.map(getShapeName).join(' ') : '0';
+      return `${subStr} | ${addStr}`;
+    }
+
+    function simplifyPools(subPoolInput, addPoolInput) {
+      let subPool = [...subPoolInput].sort((a, b) => a - b);
+      let addPool = [...addPoolInput].sort((a, b) => a - b);
+      const steps = [];
+
+      let changed = true;
+      let stepCount = 1;
+
+      while (changed && stepCount < 100) {
+        changed = false;
+
+        // 1. Cancellation rule (3^i - 3^i = 0)
+        for (let i = 0; i < subPool.length; i++) {
+          const exp = subPool[i];
+          const matchIdx = addPool.indexOf(exp);
+          if (matchIdx !== -1) {
+            subPool.splice(i, 1);
+            addPool.splice(matchIdx, 1);
+            steps.push(`Step ${stepCount++}: Cancel opposite terms of ${getShapeName(exp)} (3^${exp} - 3^${exp} = 0)\n  Current Numeral: ${formatTernaryList(subPool, addPool)}`);
+            changed = true;
+            break;
+          }
+        }
+        if (changed) continue;
+
+        // 2. Positive Carry rule (3^i + 3^i = 3^(i+1) - 3^i)
+        const addCounts = {};
+        addPool.forEach(e => addCounts[e] = (addCounts[e] || 0) + 1);
+        for (const expStr in addCounts) {
+          const exp = parseInt(expStr, 10);
+          if (addCounts[exp] >= 2) {
+            const idx1 = addPool.indexOf(exp);
+            addPool.splice(idx1, 1);
+            const idx2 = addPool.indexOf(exp);
+            addPool.splice(idx2, 1);
+
+            addPool.push(exp + 1);
+            subPool.push(exp);
+
+            addPool.sort((a, b) => a - b);
+            subPool.sort((a, b) => a - b);
+
+            steps.push(`Step ${stepCount++}: Positive Carry on 2x ${getShapeName(exp)} (3^${exp} + 3^${exp} = 3^${exp+1} - 3^${exp})\n  +1 ${getShapeName(exp+1)} added, +1 ${getShapeName(exp)} subtracted\n  Current Numeral: ${formatTernaryList(subPool, addPool)}`);
+            changed = true;
+            break;
+          }
+        }
+        if (changed) continue;
+
+        // 3. Negative Carry rule (-3^i - 3^i = -3^(i+1) + 3^i)
+        const subCounts = {};
+        subPool.forEach(e => subCounts[e] = (subCounts[e] || 0) + 1);
+        for (const expStr in subCounts) {
+          const exp = parseInt(expStr, 10);
+          if (subCounts[exp] >= 2) {
+            const idx1 = subPool.indexOf(exp);
+            subPool.splice(idx1, 1);
+            const idx2 = subPool.indexOf(exp);
+            subPool.splice(idx2, 1);
+
+            subPool.push(exp + 1);
+            addPool.push(exp);
+
+            subPool.sort((a, b) => a - b);
+            addPool.sort((a, b) => a - b);
+
+            steps.push(`Step ${stepCount++}: Negative Carry on 2x ${getShapeName(exp)} (-3^${exp} - 3^${exp} = -3^${exp+1} + 3^${exp})\n  +1 ${getShapeName(exp+1)} subtracted, +1 ${getShapeName(exp)} added\n  Current Numeral: ${formatTernaryList(subPool, addPool)}`);
+            changed = true;
+            break;
+          }
+        }
+      }
+
+      return { subPool, addPool, steps };
+    }
+
+    function renderVisualResult(subPool, addPool) {
+      const visContainer = document.getElementById('res-visual-container');
+      visContainer.innerHTML = '';
+
+      if (subPool.length === 0 && addPool.length === 0) {
+        visContainer.innerHTML = '<span style="color: var(--accent); font-weight: bold;">0 (Empty Numeral)</span>';
+      } else {
+        if (subPool.length > 0) {
+          const subGroup = document.createElement('div');
+          subGroup.style.cssText = 'display: flex; gap: 4px; align-items: center; border: 1px solid var(--sub-color); padding: 4px 8px; border-radius: 6px; background: rgba(248,113,113,0.1);';
+          subGroup.innerHTML = '<span style="color: var(--sub-color); font-size: 0.8rem; font-weight: bold;">-:</span>';
+          subPool.forEach(exp => {
+            subGroup.innerHTML += `<span title="- ${getShapeName(exp)}">${renderShapeSVG(exp, 22)}</span>`;
+          });
+          visContainer.appendChild(subGroup);
+        }
+
+        if (subPool.length > 0 && addPool.length > 0) {
+          const sep = document.createElement('span');
+          sep.style.cssText = 'color: var(--border-color); font-size: 1.2rem; font-weight: bold;';
+          sep.textContent = '|';
+          visContainer.appendChild(sep);
+        }
+
+        if (addPool.length > 0) {
+          const addGroup = document.createElement('div');
+          addGroup.style.cssText = 'display: flex; gap: 4px; align-items: center; border: 1px solid var(--add-color); padding: 4px 8px; border-radius: 6px; background: rgba(74,222,128,0.1);';
+          addGroup.innerHTML = '<span style="color: var(--add-color); font-size: 0.8rem; font-weight: bold;">+:</span>';
+          addPool.forEach(exp => {
+            addGroup.innerHTML += `<span title="+ ${getShapeName(exp)}">${renderShapeSVG(exp, 22)}</span>`;
+          });
+          visContainer.appendChild(addGroup);
+        }
+      }
+    }
+
+    function renderLogSteps(steps) {
+      const logContainer = document.getElementById('res-steps-log');
+      logContainer.innerHTML = '';
+      steps.forEach(s => {
+        const item = document.createElement('div');
+        item.className = 'step-item';
+        item.textContent = s;
+        logContainer.appendChild(item);
+      });
+    }
+
+    // Addition: N1 + N2
+    function calculateAddition() {
+      const v1 = calcNumberValue(1);
+      const v2 = calcNumberValue(2);
+      const total = v1 + v2;
+
+      document.getElementById('res-expr').textContent = `${v1} + ${v2}`;
+      document.getElementById('res-decimal').textContent = total;
+
+      const subPool = [...numState[1].sub, ...numState[2].sub];
+      const addPool = [...numState[1].add, ...numState[2].add];
+
+      const initialStep = `Initial Combined Addition Pools:\n  Subtracted (-): [${subPool.map(getShapeName).join(', ') || 'none'}]\n  Added (+):      [${addPool.map(getShapeName).join(', ') || 'none'}]\n  Numeral: ${formatTernaryList(subPool, addPool)}`;
+
+      const { subPool: resSub, addPool: resAdd, steps } = simplifyPools(subPool, addPool);
+      const allSteps = [initialStep, ...steps, `Final Addition Result: ${formatTernaryList(resSub, resAdd)} (Decimal: ${total})`];
+
+      document.getElementById('res-numeral').textContent = formatTernaryList(resSub, resAdd);
+      renderVisualResult(resSub, resAdd);
+      renderLogSteps(allSteps);
+    }
+
+    // Subtraction: N1 - N2
+    function calculateSubtraction() {
+      const v1 = calcNumberValue(1);
+      const v2 = calcNumberValue(2);
+      const total = v1 - v2;
+
+      document.getElementById('res-expr').textContent = `${v1} - ${v2}`;
+      document.getElementById('res-decimal').textContent = total;
+
+      // Subtraction negates N2 (swaps added and subtracted pools)
+      const subPool = [...numState[1].sub, ...numState[2].add];
+      const addPool = [...numState[1].add, ...numState[2].sub];
+
+      const initialStep = `Subtraction Strategy: Negate Number 2 (swap Added and Subtracted terms)\nInitial Combined Subtraction Pools:\n  Subtracted (-): [${subPool.map(getShapeName).join(', ') || 'none'}]\n  Added (+):      [${addPool.map(getShapeName).join(', ') || 'none'}]\n  Numeral: ${formatTernaryList(subPool, addPool)}`;
+
+      const { subPool: resSub, addPool: resAdd, steps } = simplifyPools(subPool, addPool);
+      const allSteps = [initialStep, ...steps, `Final Subtraction Result: ${formatTernaryList(resSub, resAdd)} (Decimal: ${total})`];
+
+      document.getElementById('res-numeral').textContent = formatTernaryList(resSub, resAdd);
+      renderVisualResult(resSub, resAdd);
+      renderLogSteps(allSteps);
+    }
+
+    // Multiplication: N1 * N2
+    function calculateMultiplication() {
+      const v1 = calcNumberValue(1);
+      const v2 = calcNumberValue(2);
+      const total = v1 * v2;
+
+      document.getElementById('res-expr').textContent = `${v1} × ${v2}`;
+      document.getElementById('res-decimal').textContent = total;
+
+      const subPool = [];
+      const addPool = [];
+
+      // (+3^a) * (+3^b) = +3^(a+b)
+      for (const a of numState[1].add) {
+        for (const b of numState[2].add) addPool.push(a + b);
+      }
+      // (-3^a) * (-3^b) = +3^(a+b)
+      for (const a of numState[1].sub) {
+        for (const b of numState[2].sub) addPool.push(a + b);
+      }
+      // (+3^a) * (-3^b) = -3^(a+b)
+      for (const a of numState[1].add) {
+        for (const b of numState[2].sub) subPool.push(a + b);
+      }
+      // (-3^a) * (+3^b) = -3^(a+b)
+      for (const a of numState[1].sub) {
+        for (const b of numState[2].add) subPool.push(a + b);
+      }
+
+      const initialStep = `Multiplication Strategy: Expand all pairwise term products (3^a * 3^b = 3^(a+b))\nExpanded Terms:\n  Subtracted (-): [${subPool.map(getShapeName).join(', ') || 'none'}]\n  Added (+):      [${addPool.map(getShapeName).join(', ') || 'none'}]\n  Numeral: ${formatTernaryList(subPool, addPool)}`;
+
+      const { subPool: resSub, addPool: resAdd, steps } = simplifyPools(subPool, addPool);
+      const allSteps = [initialStep, ...steps, `Final Multiplication Result: ${formatTernaryList(resSub, resAdd)} (Decimal: ${total})`];
+
+      document.getElementById('res-numeral').textContent = formatTernaryList(resSub, resAdd);
+      renderVisualResult(resSub, resAdd);
+      renderLogSteps(allSteps);
+    }
+
+    // Division: N1 / N2
+    function calculateDivision() {
+      const v1 = calcNumberValue(1);
+      const v2 = calcNumberValue(2);
+
+      document.getElementById('res-expr').textContent = `${v1} ÷ ${v2}`;
+
+      if (v2 === 0) {
+        document.getElementById('res-decimal').textContent = 'ERROR';
+        document.getElementById('res-numeral').textContent = 'ERROR (Division by zero)';
+        document.getElementById('res-visual-container').innerHTML = '<span style="color: var(--sub-color); font-weight: bold;">Error: Division by zero is undefined!</span>';
+        renderLogSteps(['Error: Cannot divide by zero. Number 2 must be non-zero.']);
+        return;
+      }
+
+      const q = Math.trunc(v1 / v2);
+      const rem = v1 - (q * v2);
+
+      const btQ = intToBalancedTernary(q);
+      const btRem = intToBalancedTernary(rem);
+
+      document.getElementById('res-decimal').textContent = `Quotient: ${q}, Remainder: ${rem}`;
+      document.getElementById('res-numeral').textContent = `Q: ${formatTernaryList(btQ.sub, btQ.add)} | Rem: ${formatTernaryList(btRem.sub, btRem.add)}`;
+
+      const steps = [];
+      steps.push(`Division: ${v1} ÷ ${v2}`);
+      steps.push(`Repeated Subtraction Strategy: Subtract divisor magnitude (${Math.abs(v2)}) from dividend (${Math.abs(v1)}).`);
+
+      let currentRem = Math.abs(v1);
+      const absV2 = Math.abs(v2);
+      const targetQ = Math.floor(Math.abs(v1) / absV2);
+
+      for (let i = 1; i <= targetQ; i++) {
+        const before = currentRem;
+        currentRem -= absV2;
+        steps.push(`  Step ${i}: ${before} - ${absV2} = ${currentRem} (Quotient count: ${i})`);
+      }
+
+      steps.push(`Division Final Result:\n  Quotient Decimal: ${q} -> Numeral: ${formatTernaryList(btQ.sub, btQ.add)}\n  Remainder Decimal: ${rem} -> Numeral: ${formatTernaryList(btRem.sub, btRem.add)}`);
+
+      renderVisualResult(btQ.sub, btQ.add);
+      renderLogSteps(steps);
+    }
+
+    document.getElementById('btn-add').addEventListener('click', calculateAddition);
+    document.getElementById('btn-sub').addEventListener('click', calculateSubtraction);
+    document.getElementById('btn-mul').addEventListener('click', calculateMultiplication);
+    document.getElementById('btn-div').addEventListener('click', calculateDivision);
+
+    updateNumberUI(1);
+    updateNumberUI(2);
+  </script>
+</body>
+</html>
