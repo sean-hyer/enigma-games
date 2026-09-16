@@ -303,16 +303,21 @@
 
 
         function textAt(text, r, theta, hollow = true, ctx = gctx) {
+            ctx.save();
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.font = "26px Consolas, ui-monospace, monospace";
+            const x = xCoord(r, theta);
+            const y = yCoord(r, theta);
             if (hollow) {
                 ctx.lineWidth = 1;
-                ctx.font = text == "i" ? "24px Baron" : "26px Consolas";
-                ctx.strokeText(text, xCoord(r, theta) - hTextH, yCoord(r, theta) + vTextH);
+                ctx.strokeText(text, x, y);
             } else {
                 ctx.fillStyle = "black";
                 ctx.lineWidth = 2;
-                ctx.font = text == "I" ? "24px Baron" : "26px Consolas";
-                ctx.fillText(text, xCoord(r, theta) - hText, yCoord(r, theta) + vText);
+                ctx.fillText(text, x, y);
             }
+            ctx.restore();
         }
 
         function drawGraph(canvasContext, loc, linkV, nodeV, rScale = 1.0, thetaShift = 0.0, xMid = xCenter, yMid = yCenter)
@@ -444,6 +449,9 @@
 
         function drawGame(ctx, path) {
         // compute and display progress
+        ctx.textAlign = "start";
+        ctx.textBaseline = "alphabetic";
+        ctx.lineWidth = 1;
         const lPow = 1.62;
         let nFound = 0, nTotal = 0;
         for (let iw = 0; iw < lWords.length; ++iw) {
