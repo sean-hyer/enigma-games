@@ -15,20 +15,16 @@ $base = new DateTime('2026-08-15', new DateTimeZone('UTC'));
 $today = new DateTime('now', new DateTimeZone('UTC'));
 $today->setTime(0, 0, 0);
 
-$diff = (int)$base->diff($today)->format('%r%a'); // negative before base date
-$maxPuzzleNumber = 1 + max(0, $diff);            // Day 1 on/before 15 Aug 2026
+$index0 = (int)$base->diff($today)->days;   // Aug 15 → 0
+$max0   = count($puzzles) - 1;               // 41 if 42 puzzles
+$index0 = min($index0, $max0);
 
-// Which puzzle did the client ask for?
-$requested = isset($_GET['p']) ? (int)$_GET['p'] : $maxPuzzleNumber;
+$p = isset($_GET['p']) ? (int)$_GET['p'] : ($index0 + 1);
+$index0Req = $p - 1;
 
-if ($requested < 1 || $requested > $maxPuzzleNumber || $requested > count($all)) {
+if ($index0Req < 0 || $index0Req > $index0) {
     http_response_code(403);
-    echo json_encode([
-        'error' => 'Puzzle not yet available',
-        'max'   => $maxPuzzleNumber
-    ]);
+    echo json_encode(["error" => "Puzzle not yet available", "max" => $max0 + 1]);
     exit;
 }
-
-// Return only the allowed puzzle
-echo json_encode($all[$requested - 1]);
+echo json_encode($puzzles[$index0Req]);
