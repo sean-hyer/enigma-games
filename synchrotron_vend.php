@@ -15,7 +15,7 @@ $base = new DateTime('2026-08-15', new DateTimeZone('UTC'));
 $today = new DateTime('now', new DateTimeZone('UTC'));
 $today->setTime(0, 0, 0);
 
-$index0 = (int)$base->diff($today)->days;   // Aug 15 → 0
+$index0 = (int)$start->diff($today)->days;   // Aug 15 → 0
 $max0   = count($puzzles) - 1;               // 41 if 42 puzzles
 $index0 = min($index0, $max0);
 
