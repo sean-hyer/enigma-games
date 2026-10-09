@@ -83,6 +83,7 @@
         const resp = await fetch(url);
         if (resp.ok) {
         puzzleFromList = await resp.json();
+        puzzleFromList.pop();
         // Use the requested number when present, otherwise treat it as “today” (index 0 is fine for localStorage)
         puzzleIndex = p ? (parseInt(p, 10) - 1) : 0;
         } else {
