@@ -1012,6 +1012,109 @@
                         "realized":  149.467513,
                         "tag":  "149MEB",
                         "created":  "2026-09-06"
+                    },
+
+                    {
+                        "file":  "KS_116MXD.pdf",
+                        "realized":  116.495733,
+                        "tag":  "116MXD",
+                        "created":  "2026-10-08"
+                    },
+                    {
+                        "file":  "KS_118IYJ.pdf",
+                        "realized":  118.343707,
+                        "tag":  "118IYJ",
+                        "created":  "2026-10-08"
+                    },
+                    {
+                        "file":  "KS_121BGN.pdf",
+                        "realized":  121.048077,
+                        "tag":  "121BGN",
+                        "created":  "2026-10-08"
+                    },
+                    {
+                        "file":  "KS_124BWS.pdf",
+                        "realized":  124.07203,
+                        "tag":  "124BWS",
+                        "created":  "2026-10-08"
+                    },
+                    {
+                        "file":  "KS_124YRQ.pdf",
+                        "realized":  124.949135,
+                        "tag":  "124YRQ",
+                        "created":  "2026-10-08"
+                    },
+                    {
+                        "file":  "KS_125OCO.pdf",
+                        "realized":  125.542217,
+                        "tag":  "125OCO",
+                        "created":  "2026-10-08"
+                    },
+                    {
+                        "file":  "KS_126LWT.pdf",
+                        "realized":  126.456702,
+                        "tag":  "126LWT",
+                        "created":  "2026-10-08"
+                    },
+                    {
+                        "file":  "KS_128HIF.pdf",
+                        "realized":  128.28135,
+                        "tag":  "128HIF",
+                        "created":  "2026-10-08"
+                    },
+                    {
+                        "file":  "KS_131NAJ.pdf",
+                        "realized":  131.500512,
+                        "tag":  "131NAJ",
+                        "created":  "2026-10-08"
+                    },
+                    {
+                        "file":  "KS_132LRH.pdf",
+                        "realized":  132.448623,
+                        "tag":  "132LRH",
+                        "created":  "2026-10-08"
+                    },
+                    {
+                        "file":  "KS_134TQP.pdf",
+                        "realized":  134.755291,
+                        "tag":  "134TQP",
+                        "created":  "2026-10-08"
+                    },
+                    {
+                        "file":  "KS_136LKI.pdf",
+                        "realized":  136.438325,
+                        "tag":  "136LKI",
+                        "created":  "2026-10-08"
+                    },
+                    {
+                        "file":  "KS_138DKN.pdf",
+                        "realized":  138.130917,
+                        "tag":  "138DKN",
+                        "created":  "2026-10-08"
+                    },
+                    {
+                        "file":  "KS_140ILJ.pdf",
+                        "realized":  140.324477,
+                        "tag":  "140ILJ",
+                        "created":  "2026-10-08"
+                    },
+                    {
+                        "file":  "KS_144DOZ.pdf",
+                        "realized":  144.137517,
+                        "tag":  "144DOZ",
+                        "created":  "2026-10-08"
+                    },
+                    {
+                        "file":  "KS_142NLZ.pdf",
+                        "realized":  142.517695,
+                        "tag":  "142NLZ",
+                        "created":  "2026-10-09"
+                    },
+                    {
+                        "file":  "KS_143RIY.pdf",
+                        "realized":  143.667046,
+                        "tag":  "143RIY",
+                        "created":  "2026-10-09"
                     }
                 ]
 }
