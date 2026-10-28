@@ -44,6 +44,8 @@
         <form method="dialog" id="timeTravelForm" style="display:flex; flex-direction:column; gap:12px;">
             <label for="timeTravelInput" style="font-weight:600;">Puzzle number</label>
             <input id="timeTravelInput" type="number" min="1" step="1" style="font-size:16px; padding:6px;">
+            <label for="timeTravelDate" style="font-weight:600;">Date</label>
+            <input id="timeTravelDate" type="date" min="2026-08-15" style="font-size:16px; padding:6px;">
             <div style="display:flex; gap:8px; justify-content:flex-end;">
                 <button type="button" id="timeTravelCancel" style="padding:6px 12px;">Cancel</button>
                 <button type="submit" id="timeTravelGo" style="padding:6px 12px; font-weight:600;">Go</button>
@@ -100,8 +102,23 @@
         const ttBtn = document.getElementById('timeTravelBtn');
         const ttDialog = document.getElementById('timeTravelDialog');
         const ttInput = document.getElementById('timeTravelInput');
+        const ttDate = document.getElementById('timeTravelDate');
+        const DAY_MS = 86400000;
+        const EPOCH_MS = Date.UTC(2026, 7, 15); // puzzle 1: 15 Aug 2026
+        const numToDate = (n) => Number.isInteger(n) && n > 0
+            ? new Date(EPOCH_MS + (n - 1) * DAY_MS).toISOString().slice(0, 10) : '';
+        const dateToNum = (s) => {
+            const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+            return m ? Math.round((Date.UTC(+m[1], +m[2] - 1, +m[3]) - EPOCH_MS) / DAY_MS) + 1 : NaN;
+        };
+        ttInput.addEventListener('input', () => { ttDate.value = numToDate(parseInt(ttInput.value, 10)); });
+        ttDate.addEventListener('input', () => {
+            const n = dateToNum(ttDate.value);
+            ttInput.value = n > 0 ? n : '';
+        });
         ttBtn.addEventListener('click', () => {
             ttInput.value = currentPuzzleNumber ? Math.max(1, currentPuzzleNumber - 1) : '';
+            ttDate.value = numToDate(parseInt(ttInput.value, 10));
             ttDialog.showModal();
             ttInput.select();
         });
