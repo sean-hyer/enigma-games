@@ -143,6 +143,11 @@
         puzzleIndex = p ? (parseInt(p, 10) - 1) : 0;
         const num = parseInt(resp.headers.get('X-Puzzle-Number'), 10);
         if (num > 0) currentPuzzleNumber = num;
+        const maxNum = parseInt(resp.headers.get('X-Puzzle-Max'), 10);
+        if (maxNum > 0) {
+            document.getElementById('timeTravelInput').max = maxNum;
+            document.getElementById('timeTravelDate').max = new Date(Date.UTC(2026, 7, 15) + (maxNum - 1) * 86400000).toISOString().slice(0, 10);
+        }
         } else {
         const err = await resp.json().catch(() => ({}));
         console.warn('Puzzle not available', err);
