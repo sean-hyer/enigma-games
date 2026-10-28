@@ -643,6 +643,7 @@
                         circleAt(ctx, left + rNode / 2, wordTop + rNode / 2, rLetter + 1, false);
                         if (il == lWords[iw].length - 1) {
                             ctx.fillStyle = "black";
+                            ctx.textAlign = "center";
                             ctx.font = "12px Consolas";
                             ctx.fillText(il + 1, left + rNode / 2, wordTop + rNode / 2 + 5);
                         }
