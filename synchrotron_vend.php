@@ -25,4 +25,5 @@ if ($requested < 1 || $requested > $maxPuzzleNumber || $requested > count($all))
     exit;
 }
 // Return only the allowed puzzle
+header('X-Puzzle-Number: ' . $requested);
 echo json_encode($all[$requested - 1]);
