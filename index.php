@@ -19,7 +19,7 @@
 		a.play span{font-weight:400;font-size:14px;color:#b8bfe8}
 		a.play:hover,a.play:focus-visible{transform:translateY(-3px);background:linear-gradient(135deg,#0b79ff,#7a5cff);box-shadow:0 10px 24px rgba(11,121,255,.35);outline:none}
 		a.play:hover span,a.play:focus-visible span{color:#e9ecff}
-		#useless{display:flex;flex-direction:column;gap:2px;width:100%;margin-top:22px;padding:16px 20px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.1);color:#fff;font:inherit;font-size:19px;font-weight:700;cursor:pointer;transition:transform .15s,background .15s,box-shadow .15s}
+		#useless{display:flex;flex-direction:column;gap:2px;width:100%;margin-top:14px;padding:16px 20px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.1);color:#fff;font:inherit;font-size:19px;font-weight:700;cursor:pointer;transition:transform .15s,background .15s,box-shadow .15s}
 		#useless span{font-weight:400;font-size:14px;color:#b8bfe8}
 		#useless:hover,#useless:focus-visible{transform:translateY(-3px);background:linear-gradient(135deg,#0b79ff,#7a5cff);box-shadow:0 10px 24px rgba(11,121,255,.35);outline:none}
 		#useless:hover span,#useless:focus-visible span{color:#e9ecff}
