@@ -19,7 +19,10 @@
 		a.play span{font-weight:400;font-size:14px;color:#b8bfe8}
 		a.play:hover,a.play:focus-visible{transform:translateY(-3px);background:linear-gradient(135deg,#0b79ff,#7a5cff);box-shadow:0 10px 24px rgba(11,121,255,.35);outline:none}
 		a.play:hover span,a.play:focus-visible span{color:#e9ecff}
-		#useless{margin-top:22px;padding:8px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:#b8bfe8;font:inherit;font-size:14px;cursor:pointer}
+		#useless{display:flex;flex-direction:column;gap:2px;width:100%;margin-top:22px;padding:16px 20px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.1);color:#fff;font:inherit;font-size:19px;font-weight:700;cursor:pointer;transition:transform .15s,background .15s,box-shadow .15s}
+		#useless span{font-weight:400;font-size:14px;color:#b8bfe8}
+		#useless:hover,#useless:focus-visible{transform:translateY(-3px);background:linear-gradient(135deg,#0b79ff,#7a5cff);box-shadow:0 10px 24px rgba(11,121,255,.35);outline:none}
+		#useless:hover span,#useless:focus-visible span{color:#e9ecff}
 		#useless:disabled{opacity:.5;cursor:default}
 		#uselessBox{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:10;width:280px;padding:16px;border-radius:12px;background:#1b1f4d;border:1px solid rgba(255,255,255,.25);box-shadow:0 20px 50px rgba(0,0,0,.6)}
 		#uselessBox textarea{width:100%;height:80px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:#0d1030;color:#e9ecff;padding:8px;font:inherit}
@@ -36,7 +39,7 @@
 			<a class="play" href="berserker.html">Berserker Sudoku<span>Sudoku with a vicious twist</span></a>
 			<a class="play" href="numerals.html">Numeral Puzzles<span>Roman Numerals, but... better?</span></a>
 		</nav>
-		<button id="useless" type="button">Useless button</button>
+		<button id="useless" type="button">Useless button<span>Absolutely no purpose</span></button>
 		<!-- small class="info">Upload index.php and the game file (synchrotron.html). The game file currently redirects to the original (synchrotron_4.html) to preserve the original content.</small -->
 	</div>
 <div id="uselessBox">
