@@ -201,11 +201,17 @@
         { value: yMin, text: String(yMin) }
       ];
 
-    const ages = puzzles.map(p => daysAgo(p.created));
-    const minAge = Math.min(1, ...ages);
-    const maxAge = Math.max(7, ...ages);
-    const minAgeRoot = Math.cbrt(minAge);
-    const maxAgeRoot = Math.cbrt(maxAge);
+      const creationOrder = new Map(
+        [...puzzles]
+        .sort((a, b) => String(a.created || "").localeCompare(String(b.created || "")))
+        .map((p, index) => [p, index])
+      );
+      
+      const xValues = puzzles.map(
+        p => daysAgo(p.created) + (creationOrder.get(p) ?? 0)
+      );
+      const xMinRoot = Math.cbrt(Math.min(1, ...xValues));
+      const xMaxRoot = Math.cbrt(Math.max(7, ...xValues));
 
       labels.forEach(lab => {
         const y01 = (lab.value - yMin) / (yMax - yMin);
@@ -228,7 +234,8 @@
         const realized = (p.realized != null) ? Number(p.realized) : parseTagNumber(p.tag);
         if (realized == null || Number.isNaN(realized)) return;
         const age = daysAgo(p.created);
-        let x01 = (Math.cbrt(age) - minAgeRoot) / (maxAgeRoot - minAgeRoot);
+        const xValue = age + (creationOrder.get(p) ?? 0);
+        let x01 = (Math.cbrt(xValue) - xMinRoot) / (xMaxRoot - xMinRoot);
         let y01 = (realized - yMin) / (yMax - yMin);
         y01 = Math.min(1, Math.max(0, y01));
         x01 = Math.min(1, Math.max(0, x01));
