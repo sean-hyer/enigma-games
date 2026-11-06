@@ -234,7 +234,7 @@
         const realized = (p.realized != null) ? Number(p.realized) : parseTagNumber(p.tag);
         if (realized == null || Number.isNaN(realized)) return;
         const age = daysAgo(p.created);
-        const xValue = age + (creationOrder.get(p) ?? 0);
+        const xValue = (creationOrder.get(p) ?? 0);
         let x01 = (Math.cbrt(xValue) - xMinRoot) / (xMaxRoot - xMinRoot);
         let y01 = (realized - yMin) / (yMax - yMin);
         y01 = Math.min(1, Math.max(0, y01));
