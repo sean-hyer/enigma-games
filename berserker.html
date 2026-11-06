@@ -225,7 +225,7 @@
       [0].forEach(age => {
         const el = document.createElement("div");
         el.className = "tick x";
-        el.style.left = (((Math.cbrt(age) - minAgeRoot) / (maxAgeRoot - minAgeRoot)) * 100).toFixed(2) + "%";
+        el.style.left = (((Math.cbrt(age) - xMinRoot) / (xMaxRoot - xMinRoot)) * 100).toFixed(2) + "%";
         plot.appendChild(el);
       });
 
