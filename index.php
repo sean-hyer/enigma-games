@@ -39,12 +39,12 @@
 			<a class="play" href="berserker.html">Berserker Sudoku<span>Sudoku with a vicious twist</span></a>
 			<a class="play" href="numerals.html">Numeral Puzzles<span>Roman Numerals, but... better?</span></a>
 		</nav>
-		<button id="useless" type="button">Useless button<span>Absolutely no purpose</span></button>
+		<button id="useless" type="button">Useless Button<span>...or is it?</span></button>
 		<!-- small class="info">Upload index.php and the game file (synchrotron.html). The game file currently redirects to the original (synchrotron_4.html) to preserve the original content.</small -->
 	</div>
 <div id="uselessBox">
 	<button id="uselessClose" type="button" aria-label="Close">&times;</button>
-	<textarea placeholder="Type something useless..."></textarea>
+	<textarea placeholder="Password..."></textarea>
 </div>
 <div id="fakeCursor"></div>
 <script>
